@@ -1,0 +1,51 @@
+{# Copyright (c) 2015 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "accounting/transaction_list.html" %}
+
+{% block after_field_sets %}
+
+{% if account.period_totals %}
+{% load accounting_extras %}
+<h2>Period totals</h2>
+<table>
+  <tr>
+    <th>Period</th>
+    <th>Debit</th>
+    <th>Credit</th>
+    <th>Balance</th>
+  </tr>
+  {% for period, totals in account.period_totals.items %}
+  <tr>
+    <td>{{ period }}</td>
+    <td>{{ totals.debit|currency }}</td>
+    <td>{{ totals.credit|currency }}</td>
+    <td>{{ totals.balance|currency }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{{ block.super }}
+
+{% if account.lots %}
+<h2>Lots</h2>
+<table>
+  <tr>
+    <th>Number</th>
+    <th>Owner</th>
+    <th>Description</th>
+    <th>Balance</th>
+  </tr>
+  {% for lot in account.lots %}
+  <tr>
+    <td>{{ lot.id }}</td>
+    <td>{{ lot.owner }}</td>
+    <td>{{ lot.description }}</td>
+    <td>{{ lot.balance_display }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}

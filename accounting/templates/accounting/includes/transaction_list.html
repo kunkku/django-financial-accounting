@@ -1,0 +1,45 @@
+{# Copyright (c) 2015 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% if transactions %}
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Number</th>
+    <th>Description</th>
+    {% if not account %}
+    <th>Account</th>
+    {% endif %}
+    {% if not lot %}
+    <th>Lot</th>
+    {% endif %}
+    <th>Debit</th>
+    <th>Credit</th>
+  </tr>
+  {% for txn in transactions %}
+  <tr>
+    <td>{{ txn.date }}</td>
+    <td>{{ txn.journal }}{{ txn.number }}</td>
+    <td colspan="5">{{ txn.description }}</td>
+  </tr>
+  {% for item in txn.transactionitem_set.all %}
+  {% if not account or item.account.pk == account.pk %}
+  {% if not lot or item.lot.pk == lot.pk %}
+  <tr>
+    <td></td><td></td>
+    <td>{{ item.description }}</td>
+    {% if not account %}
+    <td>{{ item.account }}</td>
+    {% endif %}
+    {% if not lot %}
+    <td>{{ item.lot|default_if_none:"" }}</td>
+    {% endif %}
+    <td>{{ item.debit }}</td>
+    <td>{{ item.credit }}</td>
+  </tr>
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+  {% endfor %}
+</table>
+{% endif %}

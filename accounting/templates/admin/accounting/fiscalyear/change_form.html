@@ -1,0 +1,9 @@
+{# Copyright (c) 2015 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+<p><a href="{% url "accounting:general_ledger" fy=fy %}">View general ledger</a></p>
+<p><a href="{% url "accounting:general_journal" fy=fy %}">View general journal</a></p>
+{% endblock %}

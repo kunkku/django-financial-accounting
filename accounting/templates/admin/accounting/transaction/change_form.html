@@ -1,0 +1,12 @@
+{# Copyright (c) 2015 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+{% if transactions.0.state == "C" %}
+{% include "accounting/includes/transaction_list.html" %}
+{% else %}
+{{ block.super }}
+{% endif %}
+{% endblock %}
