@@ -33,7 +33,7 @@ class DateRange(models.Model):
 
 
 class FiscalYear(DateRange):
-    closed = models.BooleanField()
+    closed = models.BooleanField(default=False)
 
     @classmethod
     def generate(cls, date):
