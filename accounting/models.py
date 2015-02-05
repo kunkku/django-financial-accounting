@@ -77,7 +77,7 @@ class FiscalPeriod(DateRange):
             )
 
     def __unicode__(self):
-        return u'{}-{}'.format(self.start.year, self.start.month)
+        return u'{}/{}'.format(self.start.month, self.start.year)
 
 
 
