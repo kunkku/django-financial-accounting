@@ -42,7 +42,14 @@ admin.site.register(FiscalYear, FiscalYearAdmin)
 
 
 class AccountAdmin(ContextMixin, MPTTModelAdmin):
-    list_display = ('name', 'code', 'type', Account.balance_display)
+    list_display = (
+        'name',
+        'code',
+        'type',
+        'frozen',
+        'lot_tracking',
+        Account.balance_display
+    )
 
     def get_context(self, account):
         return {'transactions': account.transactions(), 'account': account}
