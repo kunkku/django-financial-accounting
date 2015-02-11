@@ -39,12 +39,12 @@ class GeneralLedgerView(LedgerView):
 
     def get_fy_context(self, fy):
         return {
-            'start': fy.start,
-            'end': fy.end,
+            'fy': fy,
             'accounts': (
                 (
                     account,
                     account.balance(fy.start - timedelta(1)) * account.sign(),
+                    account.transactions().filter(fiscal_year=fy),
                     account.balance(fy.end) * account.sign()
                 ) for account in Account.objects.all()
             )

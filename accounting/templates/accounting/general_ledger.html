@@ -5,13 +5,12 @@
 
 {% block content %}
 
-{% for account, ob, cb in accounts %}
-{% with transactions=account.transactions %}
+{% for account, ob, transactions, cb in accounts %}
 {% if ob or transactions %}
 <h2>{{ account }}</h2>
 
 {% if ob %}
-<p>Opening balance on {{ start }}: {{ ob }}</p>
+<p>Opening balance on {{ fy.start }}: {{ ob }}</p>
 {% endif %}
 
 {% if transactions %}
@@ -19,11 +18,10 @@
 {% endif %}
 
 {% if cb %}
-<p>Closing balance on {{ end }}: {{ cb }}</p>
+<p>Closing balance on {{ fy.end }}: {{ cb }}</p>
 {% endif %}
 
 {% endif %}
-{% endwith %}
 {% endfor %}
 
 {% endblock %}
