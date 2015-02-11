@@ -130,25 +130,24 @@ class Account(MPTTModel):
         return -1 if self.type in ('As', 'Ex') else 1
 
     def balance(self, date=None, lot=None):
-        txnsum = 0
-
         params = {'transaction__state': 'C'}
         if date:
             params['transaction__date__lte'] = date
         if lot:
             params['lot'] = lot
-        txnsum = TransactionItem.sum_amount(
+        return TransactionItem.sum_amount(
             self.transactionitem_set.filter(**params)
         )
 
+    def balance_subtotal(self):
         return reduce(
             operator.add,
-            (account.balance(date, lot) for account in self.children.all()),
-            txnsum
+            (account.balance_subtotal() for account in self.children.all()),
+            self.balance()
         )
 
     def balance_display(self):
-        return currency_display(self.balance() * self.sign())
+        return currency_display(self.balance_subtotal() * self.sign())
     balance_display.short_description = 'balance'
 
     def transactions(self):
