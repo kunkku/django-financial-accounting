@@ -280,6 +280,10 @@ class Transaction(models.Model):
     def balance(self):
         return TransactionItem.sum_amount(self.transactionitem_set)
 
+    def balance_display(self):
+        return currency_display(self.balance())
+    balance_display.short_description = 'balance'
+
     def commit(self):
         if self.state != 'D':
             raise ValidationError('Transaction {} already closed'.format(self))
