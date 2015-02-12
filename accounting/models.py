@@ -117,14 +117,20 @@ class Account(MPTTModel):
                 min, (child.order for child in children)
             ) if children else ''
 
-        changed = order != self.order
-        if changed:
+        order_changed = order != self.order
+        if order_changed:
             self.order = order
+
+        old_parent = self.pk and Account.objects.get(pk=self.pk).parent
+        parent_changed = self.parent != old_parent
 
         super(Account, self).save(**kwargs)
 
-        if changed and self.parent:
+        if self.parent and (order_changed or parent_changed):
             self.parent.save()
+
+        if old_parent and parent_changed:
+            old_parent.save()
 
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
