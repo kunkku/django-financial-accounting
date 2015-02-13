@@ -159,7 +159,7 @@ class Account(MPTTModel):
     def transactions(self):
         return Transaction.objects.filter(
             state='C', transactionitem__account=self
-        )
+        ).distinct()
 
     def lots(self):
         return Lot.objects.filter(
