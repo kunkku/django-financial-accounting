@@ -235,7 +235,7 @@ class Lot(models.Model):
         return Transaction.objects.filter(state='C', transactionitem__lot=self)
 
     class Meta:
-        ordering = ('account', 'fiscal_year', 'number')
+        ordering = ('account__order', 'fiscal_year__start', 'number')
         unique_together = ('account', 'fiscal_year', 'number')
 
     def __unicode__(self):
@@ -336,7 +336,7 @@ class Transaction(models.Model):
         self.save()
 
     class Meta:
-        ordering = ('date', 'journal', 'number', 'id')
+        ordering = ('date', 'journal__code', 'number', 'id')
         unique_together = ('fiscal_year', 'journal', 'number')
 
     def __unicode__(self):

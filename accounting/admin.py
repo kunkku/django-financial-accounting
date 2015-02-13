@@ -88,7 +88,7 @@ class TransactionItemInline(admin.TabularInline):
 
 class TransactionAdmin(ContextAdmin):
     model = Transaction
-    ordering = ('-state', '-date', '-journal', '-number', '-id')
+    ordering = ('-state', '-date', '-journal__code', '-number', '-id')
     list_display = (
         Transaction.__unicode__, 'state', 'date', Transaction.balance_display
     )
