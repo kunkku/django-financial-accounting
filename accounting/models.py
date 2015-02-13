@@ -327,7 +327,7 @@ class Transaction(models.Model):
                     fiscal_year=self.fiscal_year,
                     journal=self.journal,
                     number=self.number
-            ):
+            ).exclude(pk=self.pk):
                 raise ValidationError('Duplicate transaction number')
         else:
             self.number = self.journal.issue_number(self)
