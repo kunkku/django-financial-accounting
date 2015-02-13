@@ -33,15 +33,11 @@
 <table>
   <tr>
     <th>Number</th>
-    <th>Owner</th>
-    <th>Description</th>
     <th>Balance</th>
   </tr>
   {% for lot in account.lots %}
   <tr>
     <td>{{ lot }}</td>
-    <td>{{ lot.owner }}</td>
-    <td>{{ lot.description }}</td>
     <td>{{ lot.balance_display }}</td>
   </tr>
   {% endfor %}
