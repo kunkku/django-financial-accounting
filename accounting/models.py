@@ -274,7 +274,7 @@ class Transaction(models.Model):
     journal = models.ForeignKey(Journal)
     number = models.IntegerField(blank=True, null=True)
     date = models.DateField(blank=True, null=True)
-    description = models.CharField(max_length=64, blank=True)
+    description = models.CharField(max_length=128, blank=True)
     state = models.CharField(
         max_length=1,
         choices=(('D', 'Draft'), ('C', 'Committed')),
