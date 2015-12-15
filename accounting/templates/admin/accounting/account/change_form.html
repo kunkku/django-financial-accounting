@@ -15,9 +15,9 @@
     <th>Credit</th>
     <th>Balance</th>
   </tr>
-  {% for period, totals in account.period_totals.items %}
+  {% for totals in account.period_totals|dictsort:"period" %}
   <tr>
-    <td>{{ period }}</td>
+    <td>{{ totals.period }}</td>
     <td>{{ totals.debit|currency }}</td>
     <td>{{ totals.credit|currency }}</td>
     <td>{{ totals.balance|currency }}</td>

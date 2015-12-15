@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
+import collections
 import datetime
 import operator
 import time
@@ -30,6 +31,9 @@ class DateRange(models.Model):
     class Meta:
         abstract = True
         ordering = ('start',)
+
+    def __lt__(self, rng):
+        return self.end < rng.end
 
 
 class FiscalYear(DateRange):
@@ -173,8 +177,18 @@ class Account(MPTTModel):
         ).all()
 
     def period_totals(self):
-        totals = {}
         keys = {'debit': 'lt', 'credit': 'gt'}
+
+        class PeriodDict(collections.defaultdict):
+            def __missing__(self, period):
+                pt = {'period': period}
+                for key in keys:
+                    pt[key] = 0
+
+                self[period] = pt
+                return pt
+
+        totals = PeriodDict()
 
         def update(key, comparison):
             for period in FiscalPeriod.objects.filter(
@@ -191,7 +205,7 @@ class Account(MPTTModel):
             ).annotate(
                 models.Sum('transaction__transactionitem__amount')
             ):
-                totals.setdefault(period, {})[key] = abs(
+                totals[period][key] = abs(
                     period.transaction__transactionitem__amount__sum
                 )
 
@@ -199,18 +213,15 @@ class Account(MPTTModel):
             update(key, comparison)
 
         for child in self.children.all():
-            for period, pt in child.period_totals().items():
+            for cpt in child.period_totals():
+                pt = totals[cpt['period']]
                 for key in keys:
-                    totals[period][key] = totals.setdefault(
-                        period, {}
-                    ).get(key, 0) + pt.get(key, 0)
+                    pt[key] += cpt[key]
 
         for pt in totals.values():
-            for key in keys:
-                pt.setdefault(key, 0)
             pt['balance'] = (pt['credit'] - pt['debit']) * self.sign()
 
-        return totals
+        return totals.values()
 
     class MPTTMeta:
         order_insertion_by = ('order',)
