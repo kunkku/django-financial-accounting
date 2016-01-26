@@ -13,7 +13,7 @@
       {% endif %}
     </th>
     <th>
-      {% if not lot %}
+      {% if not account or account.lot_tracking and not lot %}
       Lot
       {% endif %}
     </th>
@@ -40,7 +40,7 @@
       {% endif %}
     </td>
     <td>
-      {% if not lot %}
+      {% if not account or account.lot_tracking and not lot %}
       {{ item.lot|default_if_none:"" }}
       {% endif %}
     </td>
