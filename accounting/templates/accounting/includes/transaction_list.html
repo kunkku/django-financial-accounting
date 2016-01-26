@@ -1,4 +1,4 @@
-{# Copyright (c) 2015 Data King Ltd #}
+{# Copyright (c) 2015-2016 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% if transactions %}
@@ -13,8 +13,8 @@
     {% if not lot %}
     <th>Lot</th>
     {% endif %}
-    <th>Debit</th>
-    <th>Credit</th>
+    <th class="currency">Debit</th>
+    <th class="currency">Credit</th>
   </tr>
   {% for txn in transactions %}
   <tr>
@@ -34,8 +34,8 @@
     {% if not lot %}
     <td>{{ item.lot|default_if_none:"" }}</td>
     {% endif %}
-    <td>{{ item.debit }}</td>
-    <td>{{ item.credit }}</td>
+    <td class="currency">{{ item.debit }}</td>
+    <td class="currency">{{ item.credit }}</td>
   </tr>
   {% endif %}
   {% endif %}

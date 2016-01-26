@@ -11,7 +11,7 @@
   {% if account.model.get_level %}
   <td colspan="{{ account.model.get_level }}"></td>
   {% endif %}
-  <td style="text-align: right">{{ account.closing_balance }}</td>
+  <td class="currency">{{ account.closing_balance }}</td>
 </tr>
 {% endfor %}
 </table>
