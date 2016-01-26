@@ -37,10 +37,12 @@ class AccountView(ReportView):
             {
                 'model': account,
                 'opening_balance': self.get_balance(
-                    account, fy.start - timedelta(1)
+                    account, date=fy.start - timedelta(1), include_closing=True
                 ),
-                'closing_balance': self.get_balance(account, fy.end),
-                'transactions': account.transactions().filter(fiscal_year=fy),
+                'closing_balance': self.get_balance(account, date=fy.end),
+                'transactions': account.transactions().filter(
+                    fiscal_year=fy, closing=False
+                ),
                 'indentation': '&nbsp;' * 10 * account.get_level()
             } for account in Account.objects.all()
         )
@@ -50,16 +52,16 @@ class AccountChartView(AccountView):
     title = 'Chart of Accounts'
     template_name = 'accounting/account_chart.html'
 
-    def get_balance(self, account, date):
-        return account.balance_display(date)
+    def get_balance(self, account, **kwargs):
+        return account.balance_display(**kwargs)
 
 
 class GeneralLedgerView(AccountView):
     title = 'General Ledger'
     template_name = 'accounting/general_ledger.html'
 
-    def get_balance(self, account, date):
-        return account.balance(date) * account.sign()
+    def get_balance(self, account, **kwargs):
+        return account.balance(**kwargs) * account.sign()
 
 
 class JournalView(ReportView):

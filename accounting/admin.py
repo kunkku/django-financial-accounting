@@ -77,6 +77,7 @@ admin.site.register(Lot, LotAdmin)
 
 class JournalAdmin(ContextAdmin):
     model = Journal
+    list_display = ('code', 'description')
     change_form_template = 'accounting/transaction_list.html'
 
     def get_context(self, journal):

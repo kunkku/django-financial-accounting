@@ -58,6 +58,36 @@ class FiscalYear(DateRange):
     def __unicode__(self):
         return unicode(self.end.year)
 
+    def clean(self):
+        if not self.closed:
+            return
+
+        txn = None
+        profit = 0
+
+        for account in Account.objects.all():
+            if account.type not in ('In', 'Ex'):
+                continue
+            balance = account.balance(self.end)
+            if not balance:
+                continue
+            if not txn:
+                txn = Transaction.objects.create(
+                    journal=Journal.objects.get(closing=True),
+                    date=self.end,
+                    description='Net earnings during fiscal year ' + unicode(self),
+                    closing=True
+                )
+            txn.transactionitem_set.create(account=account, amount=-balance)
+            profit += balance
+
+        if txn:
+            if profit:
+                txn.transactionitem_set.create(
+                    account=Account.objects.get(type='NE'), amount=profit
+                )
+            txn.commit()
+
 
 class FiscalPeriod(DateRange):
     fiscal_year = models.ForeignKey(FiscalYear)
@@ -97,6 +127,7 @@ class Account(MPTTModel):
         choices=(
             ('As', 'Asset'),
             ('Eq', 'Equity'),
+            ('NE', 'Net earnings'),
             ('Li', 'Liability'),
             ('In', 'Income'),
             ('Ex', 'Expense')
@@ -139,25 +170,31 @@ class Account(MPTTModel):
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
-    def balance(self, date=None, lot=None):
-        params = {'transaction__state': 'C'}
+    def balance(self, date=None, include_closing=False, lot=None):
+        txn_filter = models.Q(transaction__state='C')
+
         if date:
-            params['transaction__date__lte'] = date
+            date_filter = models.Q(transaction__date=date)
+            if not include_closing:
+                date_filter &= models.Q(transaction__closing=False)
+            txn_filter &= models.Q(transaction__date__lt=date) | date_filter
+
         if lot:
-            params['lot'] = lot
+            txn_filter &= models.Q(lot=lot)
+
         return TransactionItem.sum_amount(
-            self.transactionitem_set.filter(**params)
+            self.transactionitem_set.filter(txn_filter)
         )
 
-    def balance_subtotal(self, date=None):
+    def balance_subtotal(self, **kwargs):
         return reduce(
             operator.add,
-            (account.balance_subtotal(date) for account in self.children.all()),
-            self.balance(date)
+            (account.balance_subtotal(**kwargs) for account in self.children.all()),
+            self.balance(**kwargs)
         )
 
-    def balance_display(self, date=None):
-        return currency_display(self.balance_subtotal(date) * self.sign())
+    def balance_display(self, **kwargs):
+        return currency_display(self.balance_subtotal(**kwargs) * self.sign())
     balance_display.short_description = 'balance'
 
     def transactions(self):
@@ -258,6 +295,7 @@ class Lot(models.Model):
 class Journal(models.Model):
     code = models.CharField(max_length=8)
     description = models.CharField(max_length=64, blank=True, null=True)
+    closing = models.BooleanField(default=False)
 
     def issue_number(self, txn):
         return (
@@ -293,6 +331,7 @@ class Transaction(models.Model):
         default='D',
         editable=False
     )
+    closing = models.BooleanField(default=False, editable=False)
 
     def balance(self):
         return TransactionItem.sum_amount(self.transactionitem_set)
