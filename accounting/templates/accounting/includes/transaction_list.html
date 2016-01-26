@@ -7,12 +7,16 @@
     <th>Date</th>
     <th>Number</th>
     <th>Description</th>
-    {% if not account %}
-    <th>Account</th>
-    {% endif %}
-    {% if not lot %}
-    <th>Lot</th>
-    {% endif %}
+    <th>
+      {% if not account %}
+      Account
+      {% endif %}
+    </th>
+    <th>
+      {% if not lot %}
+      Lot
+      {% endif %}
+    </th>
     <th class="currency">Debit</th>
     <th class="currency">Credit</th>
   </tr>
@@ -20,7 +24,9 @@
   <tr>
     <td>{{ txn.date }}</td>
     <td>{{ txn.journal }}{{ txn.number }}</td>
-    <td colspan="5">{{ txn.description }}</td>
+    <td colspan="3">{{ txn.description }}</td>
+    <td></td>
+    <td></td>
   </tr>
   {% for item in txn.transactionitem_set.all %}
   {% if not account or item.account.pk == account.pk %}
@@ -28,12 +34,16 @@
   <tr>
     <td></td><td></td>
     <td>{{ item.description }}</td>
-    {% if not account %}
-    <td>{{ item.account }}</td>
-    {% endif %}
-    {% if not lot %}
-    <td>{{ item.lot|default_if_none:"" }}</td>
-    {% endif %}
+    <td>
+      {% if not account %}
+      {{ item.account }}
+      {% endif %}
+    </td>
+    <td>
+      {% if not lot %}
+      {{ item.lot|default_if_none:"" }}
+      {% endif %}
+    </td>
     <td class="currency">{{ item.debit }}</td>
     <td class="currency">{{ item.credit }}</td>
   </tr>
