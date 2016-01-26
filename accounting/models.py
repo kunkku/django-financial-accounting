@@ -37,7 +37,7 @@ class DateRange(models.Model):
 
 
 class FiscalYear(DateRange):
-    closed = models.BooleanField(default=False)
+    closed = models.BooleanField(default=False, editable=False)
 
     @classmethod
     def generate(cls, date):
@@ -57,10 +57,11 @@ class FiscalYear(DateRange):
 
     def __unicode__(self):
         return unicode(self.end.year)
+    __unicode__.short_description = 'Fiscal year'
 
-    def clean(self):
-        if not self.closed:
-            return
+    def close(self):
+        if self.closed:
+            raise ValidationError('Fiscal year {} already closed'.format(self))
 
         txn = None
         profit = 0
@@ -87,6 +88,9 @@ class FiscalYear(DateRange):
                     account=Account.objects.get(type='NE'), amount=profit
                 )
             txn.commit()
+
+        self.closed = True
+        self.save()
 
 
 class FiscalPeriod(DateRange):

@@ -29,11 +29,29 @@ class ContextMixin(object):
                 assert False
 
 class ContextAdmin(ContextMixin, admin.ModelAdmin):
-    pass
+
+    @staticmethod
+    def action(method, order, message):
+        def f(self, request, queryset):
+            for obj in queryset.order_by(*order).all():
+                try:
+                    getattr(obj, method)()
+                    messages.success(request, message.format(obj))
+                except ValidationError, e:
+                    messages.error(request, ', '.join(e.messages))
+                    break
+        f.short_description = method.capitalize()
+        return f
 
 
 class FiscalYearAdmin(ContextAdmin):
     model = FiscalYear
+    list_display = (FiscalYear.__unicode__, 'start', 'end', 'closed')
+    actions = (
+        ContextAdmin.action(
+            'close', ('end',), 'Books closed for fiscal year {}'
+        ),
+    )
 
     def get_context(self, fy):
         return {
@@ -98,26 +116,16 @@ class TransactionAdmin(ContextAdmin):
     )
     list_filter = ('state',)
     inlines = (TransactionItemInline,)
-    actions = ('commit',)
+    actions = (
+        ContextAdmin.action(
+            'commit', ('date', 'id'), 'Transaction {} committed'
+        ),
+    )
 
     def get_context(self, txn):
         return {
             'transactions': [txn], 'title': txn
         } if txn.state == 'C' else {}
-
-    def commit(self, request, queryset):
-        for txn in queryset.order_by('date', 'id').all():
-            try:
-                txn.commit()
-                messages.success(
-                    request, 'Transaction {} committed'.format(txn)
-                )
-            except ValidationError, e:
-                messages.error(
-                    request,
-                    'Transaction {}: {}'.format(txn, ', '.join(e.messages))
-                )
-                break
 
 admin.site.register(Transaction, TransactionAdmin)
 
