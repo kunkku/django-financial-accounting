@@ -149,15 +149,15 @@ class Account(MPTTModel):
             self.transactionitem_set.filter(**params)
         )
 
-    def balance_subtotal(self):
+    def balance_subtotal(self, date=None):
         return reduce(
             operator.add,
-            (account.balance_subtotal() for account in self.children.all()),
-            self.balance()
+            (account.balance_subtotal(date) for account in self.children.all()),
+            self.balance(date)
         )
 
-    def balance_display(self):
-        return currency_display(self.balance_subtotal() * self.sign())
+    def balance_display(self, date=None):
+        return currency_display(self.balance_subtotal(date) * self.sign())
     balance_display.short_description = 'balance'
 
     def transactions(self):

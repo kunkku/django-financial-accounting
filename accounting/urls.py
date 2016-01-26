@@ -8,6 +8,11 @@ from accounting.views import *
 urlpatterns = patterns(
     '',
     url(
+        r'^account_chart/(?P<fy>\d+)/$',
+        AccountChartView.as_view(),
+        name='account_chart'
+    ),
+    url(
         r'^general-ledger/(?P<fy>\d+)/$',
         GeneralLedgerView.as_view(),
         name='general_ledger'

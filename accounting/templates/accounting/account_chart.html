@@ -1,0 +1,18 @@
+{# Copyright (c) 2015-2016 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "accounting/report.html" %}
+
+{% block content %}
+<table>
+{% for account in accounts %}
+<tr>
+  <td>{{ account.indentation|safe }} {{ account.model }}</td>
+  {% if account.model.get_level %}
+  <td colspan="{{ account.model.get_level }}"></td>
+  {% endif %}
+  <td style="text-align: right">{{ account.closing_balance }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
