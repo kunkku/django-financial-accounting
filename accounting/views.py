@@ -27,21 +27,6 @@ class LedgerView(TemplateView):
         return res
 
 
-class JournalView(LedgerView):
-    template_name = 'accounting/journal.html'
-
-    def update_context(self, context, args):
-        context['title'] = 'General Journal'
-        txn_filter = {'fiscal_year': context['fy']}
-
-        if 'code' in args:
-            journal = get_object_or_404(Journal, code=args['code'])
-            context['title'] = journal.description or journal.code
-            txn_filter['journal'] = journal
-
-        context['transactions'] = Transaction.objects.filter(**txn_filter)
-
-
 class GeneralLedgerView(LedgerView):
     template_name = 'accounting/general_ledger.html'
 
@@ -57,3 +42,18 @@ class GeneralLedgerView(LedgerView):
                 account.balance(fy.end) * account.sign()
             ) for account in Account.objects.all()
         )
+
+
+class JournalView(LedgerView):
+    template_name = 'accounting/journal.html'
+
+    def update_context(self, context, args):
+        context['title'] = 'General Journal'
+        txn_filter = {'fiscal_year': context['fy']}
+
+        if 'code' in args:
+            journal = get_object_or_404(Journal, code=args['code'])
+            context['title'] = journal.description or journal.code
+            txn_filter['journal'] = journal
+
+        context['transactions'] = Transaction.objects.filter(**txn_filter)

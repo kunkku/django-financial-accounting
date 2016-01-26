@@ -8,9 +8,9 @@ from accounting.views import *
 urlpatterns = patterns(
     '',
     url(
-        r'^journal/(?P<fy>\d+)/(?P<code>[^/]+)/$',
-        JournalView.as_view(),
-        name='journal'
+        r'^general-ledger/(?P<fy>\d+)/$',
+        GeneralLedgerView.as_view(),
+        name='general_ledger'
     ),
     url(
         r'^general-journal/(?P<fy>\d+)/$',
@@ -18,8 +18,8 @@ urlpatterns = patterns(
         name='general_journal'
     ),
     url(
-        r'^general-ledger/(?P<fy>\d+)/$',
-        GeneralLedgerView.as_view(),
-        name='general_ledger'
+        r'^journal/(?P<fy>\d+)/(?P<code>[^/]+)/$',
+        JournalView.as_view(),
+        name='journal'
     )
 )
