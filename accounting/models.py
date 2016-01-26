@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Data King Ltd
+# Copyright (c) 2015-2016 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -257,6 +257,7 @@ class Lot(models.Model):
 
 class Journal(models.Model):
     code = models.CharField(max_length=8)
+    description = models.CharField(max_length=64, blank=True, null=True)
 
     def issue_number(self, txn):
         return (

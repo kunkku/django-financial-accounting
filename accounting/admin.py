@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Data King Ltd
+# Copyright (c) 2015-2016 Data King Ltd
 # See LICENSE file for license details
 
 from django.contrib import admin, messages
@@ -36,7 +36,10 @@ class FiscalYearAdmin(ContextAdmin):
     model = FiscalYear
 
     def get_context(self, fy):
-        return {'fy': unicode(fy)}
+        return {
+            'fy': unicode(fy),
+            'journals': (j.code for j in Journal.objects.all())
+        }
 
 admin.site.register(FiscalYear, FiscalYearAdmin)
 
