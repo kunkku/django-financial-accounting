@@ -3,53 +3,57 @@
 
 {% if transactions %}
 <table>
-  <tr>
-    <th>Date</th>
-    <th>Number</th>
-    <th>Description</th>
-    <th>
-      {% if not account %}
-      Account
-      {% endif %}
-    </th>
-    <th>
-      {% if not account or account.lot_tracking and not lot %}
-      Lot
-      {% endif %}
-    </th>
-    <th class="currency">Debit</th>
-    <th class="currency">Credit</th>
-  </tr>
-  {% for txn in transactions %}
-  <tr>
-    <td>{{ txn.date }}</td>
-    <td>{{ txn.journal }}{{ txn.number }}</td>
-    <td colspan="3">{{ txn.description }}</td>
-    <td></td>
-    <td></td>
-  </tr>
-  {% for item in txn.transactionitem_set.all %}
-  {% if not account or item.account.pk == account.pk %}
-  {% if not lot or item.lot.pk == lot.pk %}
-  <tr>
-    <td></td><td></td>
-    <td>{{ item.description }}</td>
-    <td>
-      {% if not account %}
-      {{ item.account }}
-      {% endif %}
-    </td>
-    <td>
-      {% if not account or account.lot_tracking and not lot %}
-      {{ item.lot|default_if_none:"" }}
-      {% endif %}
-    </td>
-    <td class="currency">{{ item.debit }}</td>
-    <td class="currency">{{ item.credit }}</td>
-  </tr>
-  {% endif %}
-  {% endif %}
-  {% endfor %}
-  {% endfor %}
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Number</th>
+      <th>Description</th>
+      <th>
+	{% if not account %}
+	Account
+	{% endif %}
+      </th>
+      <th>
+	{% if not account or account.lot_tracking and not lot %}
+	Lot
+	{% endif %}
+      </th>
+      <th class="currency">Debit</th>
+      <th class="currency">Credit</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for txn in transactions %}
+    <tr>
+      <td>{{ txn.date }}</td>
+      <td>{{ txn.journal }}{{ txn.number }}</td>
+      <td colspan="3">{{ txn.description }}</td>
+      <td></td>
+      <td></td>
+    </tr>
+    {% for item in txn.transactionitem_set.all %}
+    {% if not account or item.account.pk == account.pk %}
+    {% if not lot or item.lot.pk == lot.pk %}
+    <tr>
+      <td></td><td></td>
+      <td>{{ item.description }}</td>
+      <td>
+	{% if not account %}
+	{{ item.account }}
+	{% endif %}
+      </td>
+      <td>
+	{% if not account or account.lot_tracking and not lot %}
+	{{ item.lot|default_if_none:"" }}
+	{% endif %}
+      </td>
+      <td class="currency">{{ item.debit }}</td>
+      <td class="currency">{{ item.credit }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+  </tbody>
 </table>
 {% endif %}
