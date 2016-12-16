@@ -5,8 +5,7 @@ from django.conf.urls import *
 
 from accounting.views import *
 
-urlpatterns = patterns(
-    '',
+urlpatterns = (
     url(
         r'^account_chart/(?P<fy>\d+)/$',
         AccountChartView.as_view(),
