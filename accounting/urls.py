@@ -1,9 +1,11 @@
-# Copyright (c) 2015-2016 Data King Ltd
+# Copyright (c) 2015-2017 Data King Ltd
 # See LICENSE file for license details
 
 from django.conf.urls import *
 
 from accounting.views import *
+
+app_name = 'accounting'
 
 urlpatterns = (
     url(
