@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2016 Data King Ltd
+# Copyright (c) 2015-2017 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -165,11 +165,15 @@ class Account(MPTTModel):
 
         super(Account, self).save(**kwargs)
 
-        if self.parent and (order_changed or parent_changed):
-            self.parent.save()
+        def update(account):
+            if account:
+                Account.objects.get(pk=account.pk).save()
 
-        if old_parent and parent_changed:
-            old_parent.save()
+        if order_changed or parent_changed:
+            update(self.parent)
+
+        if parent_changed:
+            update(old_parent)
 
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
