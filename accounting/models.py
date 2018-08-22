@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2017 Data King Ltd
+# Copyright (c) 2015-2018 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -7,6 +7,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 import collections
 import datetime
+import functools
 import operator
 import time
 
@@ -55,9 +56,9 @@ class FiscalYear(DateRange):
             latest = FiscalYear.objects.create(start=start, end=end)
         return latest
 
-    def __unicode__(self):
-        return unicode(self.end.year)
-    __unicode__.short_description = 'Fiscal year'
+    def __str__(self):
+        return str(self.end.year)
+    __str__.short_description = 'Fiscal year'
 
     def close(self):
         if self.closed:
@@ -76,7 +77,7 @@ class FiscalYear(DateRange):
                 txn = Transaction.objects.create(
                     journal=Journal.objects.get(closing=True),
                     date=self.end,
-                    description='Net earnings during fiscal year ' + unicode(self),
+                    description='Net earnings during fiscal year ' + str(self),
                     closing=True
                 )
             txn.transactionitem_set.create(account=account, amount=-balance)
@@ -114,8 +115,8 @@ class FiscalPeriod(DateRange):
                 'Fiscal period cannot span multiple fiscal years'
             )
 
-    def __unicode__(self):
-        return u'{}/{}'.format(self.start.month, self.start.year)
+    def __str__(self):
+        return '{}/{}'.format(self.start.month, self.start.year)
 
 
 
@@ -152,7 +153,7 @@ class Account(MPTTModel):
             order = self.code
         else:
             children = self.children.all()
-            order = reduce(
+            order = functools.reduce(
                 min, (child.order for child in children)
             ) if children else ''
 
@@ -195,7 +196,7 @@ class Account(MPTTModel):
         )
 
     def balance_subtotal(self, **kwargs):
-        return reduce(
+        return functools.reduce(
             operator.add,
             (account.balance_subtotal(**kwargs) for account in self.children.all()),
             self.balance(**kwargs)
@@ -266,13 +267,13 @@ class Account(MPTTModel):
         for pt in totals.values():
             pt['balance'] = (pt['credit'] - pt['debit']) * self.sign()
 
-        return totals.values()
+        return list(totals.values())
 
     class MPTTMeta:
         order_insertion_by = ('order',)
 
-    def __unicode__(self):
-        return ((self.code + ' ') if self.code else u'') + self.name
+    def __str__(self):
+        return ((self.code + ' ') if self.code else '') + self.name
 
 
 class Lot(models.Model):
@@ -294,9 +295,9 @@ class Lot(models.Model):
         ordering = ('account__order', 'fiscal_year__start', 'number')
         unique_together = ('account', 'fiscal_year', 'number')
 
-    def __unicode__(self):
-        return u'{}/{}'.format(self.fiscal_year, self.number)
-    __unicode__.short_description = 'lot'
+    def __str__(self):
+        return '{}/{}'.format(self.fiscal_year, self.number)
+    __str__.short_description = 'lot'
 
 
 
@@ -318,7 +319,7 @@ class Journal(models.Model):
     class Meta:
         ordering = ('code',)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
 
@@ -398,16 +399,16 @@ class Transaction(models.Model):
         ordering = ('date', 'journal__code', 'number', 'id')
         unique_together = ('fiscal_year', 'journal', 'number')
 
-    def __unicode__(self):
+    def __str__(self):
         if self.state == 'C':
-            return u'{}/{}{}'.format(
+            return '{}/{}{}'.format(
                 self.fiscal_year, self.journal, self.number
             )
-        return u'#{}{}'.format(
+        return '#{}{}'.format(
             self.id,
-            u' ({})'.format(self.date) if self.date else ''
+            ' ({})'.format(self.date) if self.date else ''
         )
-    __unicode__.short_description = 'transaction'
+    __str__.short_description = 'transaction'
 
 
 class TransactionItem(models.Model):
@@ -432,7 +433,7 @@ class TransactionItem(models.Model):
         try:
             if self.account.frozen:
                 raise ValidationError(
-                    u'Account frozen: ' + unicode(self.account)
+                    'Account frozen: ' + str(self.account)
                 )
         except Account.DoesNotExist:
             return
@@ -440,5 +441,5 @@ class TransactionItem(models.Model):
         if self.lot and self.lot.account != self.account:
             raise ValidationError('Lot does not match the account')
 
-    def __unicode__(self):
-        return u''
+    def __str__(self):
+        return ''

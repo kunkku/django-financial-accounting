@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2016 Data King Ltd
+# Copyright (c) 2015-2018 Data King Ltd
 # See LICENSE file for license details
 
 from django.contrib import admin, messages
@@ -37,7 +37,7 @@ class ContextAdmin(ContextMixin, admin.ModelAdmin):
                 try:
                     getattr(obj, method)()
                     messages.success(request, message.format(obj))
-                except ValidationError, e:
+                except ValidationError as e:
                     messages.error(request, ', '.join(e.messages))
                     break
         f.short_description = method.capitalize()
@@ -46,7 +46,7 @@ class ContextAdmin(ContextMixin, admin.ModelAdmin):
 
 class FiscalYearAdmin(ContextAdmin):
     model = FiscalYear
-    list_display = (FiscalYear.__unicode__, 'start', 'end', 'closed')
+    list_display = (FiscalYear.__str__, 'start', 'end', 'closed')
     actions = (
         ContextAdmin.action(
             'close', ('end',), 'Books closed for fiscal year {}'
@@ -55,7 +55,7 @@ class FiscalYearAdmin(ContextAdmin):
 
     def get_context(self, fy):
         return {
-            'fy': unicode(fy),
+            'fy': str(fy),
             'journals': (j.code for j in Journal.objects.all())
         }
 
@@ -80,7 +80,7 @@ admin.site.register(Account, AccountAdmin)
 
 class LotAdmin(ContextAdmin):
     model = Lot
-    list_display = (Lot.__unicode__, 'account', Lot.balance_display)
+    list_display = (Lot.__str__, 'account', Lot.balance_display)
     change_form_template = 'accounting/transaction_list.html'
 
     def get_context(self, lot):
@@ -112,7 +112,7 @@ class TransactionAdmin(ContextAdmin):
     model = Transaction
     ordering = ('-state', '-date', '-journal__code', '-number', '-id')
     list_display = (
-        Transaction.__unicode__, 'state', 'date', Transaction.balance_display
+        Transaction.__str__, 'state', 'date', Transaction.balance_display
     )
     list_filter = ('state',)
     inlines = (TransactionItemInline,)

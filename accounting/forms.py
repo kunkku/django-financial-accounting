@@ -1,4 +1,4 @@
-# Copyright (c) 2015 Data King Ltd
+# Copyright (c) 2015-2018 Data King Ltd
 # See LICENSE file for license details
 
 from django import forms
@@ -44,7 +44,7 @@ class TransactionItemForm(forms.ModelForm):
 
         targets = [('', '-' * 9)]
         for account in Account.objects.filter(frozen=False).all():
-            targets.append((account.pk, unicode(account)))
+            targets.append((account.pk, str(account)))
             if account.lot_tracking:
                 for lot in account.lots():
                     targets.append(
