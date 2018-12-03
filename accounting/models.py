@@ -95,7 +95,7 @@ class FiscalYear(DateRange):
 
 
 class FiscalPeriod(DateRange):
-    fiscal_year = models.ForeignKey(FiscalYear)
+    fiscal_year = models.ForeignKey(FiscalYear, on_delete=models.PROTECT)
 
     @classmethod
     def generate(cls, date):
@@ -124,7 +124,11 @@ class Account(MPTTModel):
     name = models.CharField(max_length=64)
     code = models.CharField(max_length=8, blank=True)
     parent = TreeForeignKey(
-        'self', blank=True, null=True, related_name='children'
+        'self',
+	blank=True,
+	null=True,
+	on_delete=models.PROTECT,
+	related_name='children'
     )
     order = models.CharField(max_length=8, blank=True, editable=False)
     type = models.CharField(
@@ -277,8 +281,12 @@ class Account(MPTTModel):
 
 
 class Lot(models.Model):
-    account = models.ForeignKey(Account, editable=False)
-    fiscal_year = models.ForeignKey(FiscalYear, editable=False)
+    account = models.ForeignKey(
+	Account, editable=False, on_delete=models.PROTECT
+    )
+    fiscal_year = models.ForeignKey(
+	FiscalYear, editable=False, on_delete=models.PROTECT
+    )
     number = models.IntegerField(editable=False)
 
     def balance(self):
@@ -325,12 +333,20 @@ class Journal(models.Model):
 
 class Transaction(models.Model):
     fiscal_year = models.ForeignKey(
-        FiscalYear, blank=True, null=True, editable=False
+        FiscalYear,
+	blank=True,
+	null=True,
+	editable=False,
+	on_delete=models.PROTECT
     )
     period = models.ForeignKey(
-        FiscalPeriod, blank=True, null=True, editable=False
+        FiscalPeriod,
+	blank=True,
+	null=True,
+	editable=False,
+	on_delete=models.PROTECT
     )
-    journal = models.ForeignKey(Journal)
+    journal = models.ForeignKey(Journal, on_delete=models.PROTECT)
     number = models.IntegerField(blank=True, null=True)
     date = models.DateField(blank=True, null=True)
     description = models.CharField(max_length=128, blank=True)
@@ -412,9 +428,11 @@ class Transaction(models.Model):
 
 
 class TransactionItem(models.Model):
-    transaction = models.ForeignKey(Transaction)
-    account = models.ForeignKey(Account, limit_choices_to={'frozen': False})
-    lot = models.ForeignKey(Lot, blank=True, null=True)
+    transaction = models.ForeignKey(Transaction, on_delete=models.PROTECT)
+    account = models.ForeignKey(
+	Account, limit_choices_to={'frozen': False}, on_delete=models.PROTECT
+    )
+    lot = models.ForeignKey(Lot, blank=True, null=True, on_delete=models.PROTECT)
     amount = models.DecimalField(max_digits=16, decimal_places=2)
     description = models.CharField(max_length=64, blank=True)
 

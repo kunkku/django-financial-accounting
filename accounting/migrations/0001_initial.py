@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='accounting.Account', null=True)),
+                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='accounting.Account', null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'abstract': False,
@@ -68,8 +68,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('number', models.IntegerField(editable=False)),
-                ('account', models.ForeignKey(editable=False, to='accounting.Account')),
-                ('fiscal_year', models.ForeignKey(editable=False, to='accounting.FiscalYear')),
+                ('account', models.ForeignKey(editable=False, to='accounting.Account', on_delete=models.PROTECT)),
+                ('fiscal_year', models.ForeignKey(editable=False, to='accounting.FiscalYear', on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ('account__order', 'fiscal_year__start', 'number'),
@@ -83,9 +83,9 @@ class Migration(migrations.Migration):
                 ('date', models.DateField(null=True, blank=True)),
                 ('description', models.CharField(max_length=128, blank=True)),
                 ('state', models.CharField(default=b'D', max_length=1, editable=False, choices=[(b'D', b'Draft'), (b'C', b'Committed')])),
-                ('fiscal_year', models.ForeignKey(blank=True, editable=False, to='accounting.FiscalYear', null=True)),
-                ('journal', models.ForeignKey(to='accounting.Journal')),
-                ('period', models.ForeignKey(blank=True, editable=False, to='accounting.FiscalPeriod', null=True)),
+                ('fiscal_year', models.ForeignKey(blank=True, editable=False, to='accounting.FiscalYear', null=True, on_delete=models.PROTECT)),
+                ('journal', models.ForeignKey(to='accounting.Journal', on_delete=models.PROTECT)),
+                ('period', models.ForeignKey(blank=True, editable=False, to='accounting.FiscalPeriod', null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ('date', 'journal__code', 'number', 'id'),
@@ -97,15 +97,15 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('amount', models.DecimalField(max_digits=16, decimal_places=2)),
                 ('description', models.CharField(max_length=64, blank=True)),
-                ('account', models.ForeignKey(to='accounting.Account')),
-                ('lot', models.ForeignKey(blank=True, to='accounting.Lot', null=True)),
-                ('transaction', models.ForeignKey(to='accounting.Transaction')),
+                ('account', models.ForeignKey(to='accounting.Account', on_delete=models.PROTECT)),
+                ('lot', models.ForeignKey(blank=True, to='accounting.Lot', null=True, on_delete=models.PROTECT)),
+                ('transaction', models.ForeignKey(to='accounting.Transaction', on_delete=models.PROTECT)),
             ],
         ),
         migrations.AddField(
             model_name='fiscalperiod',
             name='fiscal_year',
-            field=models.ForeignKey(to='accounting.FiscalYear'),
+            field=models.ForeignKey(to='accounting.FiscalYear', on_delete=models.PROTECT),
         ),
         migrations.AlterUniqueTogether(
             name='transaction',
