@@ -1,0 +1,418 @@
+- model: accounting.account
+  pk: 1
+  fields:
+    name: Balance sheet
+    code: ''
+    parent: null
+    order: '1000'
+    type: As
+    frozen: true
+    lot_tracking: false
+    lft: 1
+    rght: 44
+    tree_id: 1
+    level: 0
+- model: accounting.account
+  pk: 2
+  fields:
+    name: Assets
+    code: '1000'
+    parent: 1
+    order: '1000'
+    type: As
+    frozen: true
+    lot_tracking: false
+    lft: 2
+    rght: 19
+    tree_id: 1
+    level: 1
+- model: accounting.account
+  pk: 3
+  fields:
+    name: Current assets
+    code: ''
+    parent: 2
+    order: '1100'
+    type: As
+    frozen: true
+    lot_tracking: false
+    lft: 3
+    rght: 12
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 4
+  fields:
+    name: Cash
+    code: '1100'
+    parent: 3
+    order: '1100'
+    type: As
+    frozen: false
+    lot_tracking: false
+    lft: 4
+    rght: 5
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 5
+  fields:
+    name: Accounts receivable
+    code: '1200'
+    parent: 3
+    order: '1200'
+    type: As
+    frozen: false
+    lot_tracking: true
+    lft: 6
+    rght: 7
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 6
+  fields:
+    name: Inventories
+    code: '1300'
+    parent: 3
+    order: '1300'
+    type: As
+    frozen: false
+    lot_tracking: false
+    lft: 8
+    rght: 9
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 7
+  fields:
+    name: Prepaid expenses
+    code: '1400'
+    parent: 3
+    order: '1400'
+    type: As
+    frozen: false
+    lot_tracking: true
+    lft: 10
+    rght: 11
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 8
+  fields:
+    name: Noncurrent assets
+    code: ''
+    parent: 2
+    order: '1500'
+    type: As
+    frozen: true
+    lot_tracking: false
+    lft: 13
+    rght: 18
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 9
+  fields:
+    name: Financial assets and intangibles
+    code: '1500'
+    parent: 8
+    order: '1500'
+    type: As
+    frozen: false
+    lot_tracking: false
+    lft: 14
+    rght: 15
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 10
+  fields:
+    name: Property, plant, and equipment
+    code: '1600'
+    parent: 8
+    order: '1600'
+    type: As
+    frozen: false
+    lot_tracking: false
+    lft: 16
+    rght: 17
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 11
+  fields:
+    name: Liabilities
+    code: '2000'
+    parent: 1
+    order: '2000'
+    type: Li
+    frozen: true
+    lot_tracking: false
+    lft: 20
+    rght: 33
+    tree_id: 1
+    level: 1
+- model: accounting.account
+  pk: 12
+  fields:
+    name: Current liabilities
+    code: ''
+    parent: 11
+    order: '2100'
+    type: Li
+    frozen: true
+    lot_tracking: false
+    lft: 21
+    rght: 28
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 13
+  fields:
+    name: Short-term debt
+    code: '2100'
+    parent: 12
+    order: '2100'
+    type: Li
+    frozen: false
+    lot_tracking: false
+    lft: 22
+    rght: 23
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 14
+  fields:
+    name: Accounts payable
+    code: '2200'
+    parent: 12
+    order: '2200'
+    type: Li
+    frozen: false
+    lot_tracking: true
+    lft: 24
+    rght: 25
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 15
+  fields:
+    name: Accrued expenses
+    code: '2300'
+    parent: 12
+    order: '2300'
+    type: Li
+    frozen: false
+    lot_tracking: true
+    lft: 26
+    rght: 27
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 16
+  fields:
+    name: Noncurrent liabilities
+    code: ''
+    parent: 11
+    order: '2700'
+    type: Li
+    frozen: true
+    lot_tracking: false
+    lft: 29
+    rght: 32
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 17
+  fields:
+    name: Long-term debt
+    code: '2700'
+    parent: 16
+    order: '2700'
+    type: Li
+    frozen: false
+    lot_tracking: false
+    lft: 30
+    rght: 31
+    tree_id: 1
+    level: 3
+- model: accounting.account
+  pk: 18
+  fields:
+    name: Owners' equity
+    code: '3000'
+    parent: 1
+    order: '3000'
+    type: Eq
+    frozen: true
+    lot_tracking: false
+    lft: 34
+    rght: 43
+    tree_id: 1
+    level: 1
+- model: accounting.account
+  pk: 19
+  fields:
+    name: Common stock
+    code: '3100'
+    parent: 18
+    order: '3100'
+    type: Eq
+    frozen: false
+    lot_tracking: false
+    lft: 35
+    rght: 36
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 20
+  fields:
+    name: Preferred stock
+    code: '3200'
+    parent: 18
+    order: '3200'
+    type: Eq
+    frozen: false
+    lot_tracking: false
+    lft: 37
+    rght: 38
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 21
+  fields:
+    name: Paid-in capital
+    code: '3300'
+    parent: 18
+    order: '3300'
+    type: Eq
+    frozen: false
+    lot_tracking: false
+    lft: 39
+    rght: 40
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 22
+  fields:
+    name: Retained earnings
+    code: '3900'
+    parent: 18
+    order: '3900'
+    type: NE
+    frozen: false
+    lot_tracking: false
+    lft: 41
+    rght: 42
+    tree_id: 1
+    level: 2
+- model: accounting.account
+  pk: 23
+  fields:
+    name: Income statement
+    code: ''
+    parent: null
+    order: '4000'
+    type: In
+    frozen: true
+    lot_tracking: false
+    lft: 1
+    rght: 14
+    tree_id: 2
+    level: 0
+- model: accounting.account
+  pk: 24
+  fields:
+    name: Revenue
+    code: '4000'
+    parent: 23
+    order: '4000'
+    type: In
+    frozen: false
+    lot_tracking: false
+    lft: 2
+    rght: 3
+    tree_id: 2
+    level: 1
+- model: accounting.account
+  pk: 25
+  fields:
+    name: Cost of goods sold
+    code: '5000'
+    parent: 23
+    order: '5000'
+    type: Ex
+    frozen: false
+    lot_tracking: false
+    lft: 4
+    rght: 5
+    tree_id: 2
+    level: 1
+- model: accounting.account
+  pk: 26
+  fields:
+    name: Selling, general, and administrative
+    code: '6000'
+    parent: 23
+    order: '6000'
+    type: Ex
+    frozen: false
+    lot_tracking: false
+    lft: 6
+    rght: 7
+    tree_id: 2
+    level: 1
+- model: accounting.account
+  pk: 27
+  fields:
+    name: Depreciation and amortization
+    code: '7000'
+    parent: 23
+    order: '7000'
+    type: Ex
+    frozen: false
+    lot_tracking: false
+    lft: 8
+    rght: 9
+    tree_id: 2
+    level: 1
+- model: accounting.account
+  pk: 28
+  fields:
+    name: Interests
+    code: '8000'
+    parent: 23
+    order: '8000'
+    type: Ex
+    frozen: false
+    lot_tracking: false
+    lft: 10
+    rght: 11
+    tree_id: 2
+    level: 1
+- model: accounting.account
+  pk: 29
+  fields:
+    name: Taxes
+    code: '9000'
+    parent: 23
+    order: '9000'
+    type: Ex
+    frozen: false
+    lot_tracking: false
+    lft: 12
+    rght: 13
+    tree_id: 2
+    level: 1
+- model: accounting.journal
+  pk: 1
+  fields:
+    code: C
+    description: Cash
+    closing: false
+- model: accounting.journal
+  pk: 2
+  fields:
+    code: X
+    description: Transfer
+    closing: true
