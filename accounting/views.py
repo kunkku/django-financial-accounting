@@ -1,7 +1,7 @@
-# Copyright (c) 2015-2016 Data King Ltd
+# Copyright (c) 2015-2019 Data King Ltd
 # See LICENSE file for license details
 
-from django.shortcuts import get_object_or_404
+from django.http import Http404
 from django.views.generic import TemplateView
 
 from datetime import date, timedelta
@@ -13,15 +13,23 @@ class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
         res = super(ReportView, self).get_context_data(**kwargs)
+        fy = kwargs['fy']
 
-        fy = int(kwargs['fy'])
-        fy = get_object_or_404(
-            FiscalYear,
-            start__gt=date(fy - 1, 12, 31),
-            end__lt=date(fy + 1, 1, 1)
-        )
+        try:
+            y = int(fy)
+            i = 0
+        except ValueError:
+            y = int(fy[:-1])
+            i = ord(fy[-1]) - 64
+
+        try:
+            fy = FiscalYear.objects.filter(
+                end__gte=date(y, 1, 1), end__lte=date(y, 12, 31)
+            ).order_by('end')[i]
+        except IndexError:
+            raise Http404
+
         res['fy'] = fy
-
         self.update_context(res, kwargs)
         res['title'] += ' {}'.format(fy)
         return res

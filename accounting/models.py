@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2018 Data King Ltd
+# Copyright (c) 2015-2019 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -57,7 +57,10 @@ class FiscalYear(DateRange):
         return latest
 
     def __str__(self):
-        return str(self.end.year)
+        i = FiscalYear.objects.filter(
+            end__gte=datetime.date(self.end.year, 1, 1), end__lt=self.end
+        ).count()
+        return str(self.end.year) + (chr(64 + i) if i else '')
     __str__.short_description = 'Fiscal year'
 
     def close(self):
