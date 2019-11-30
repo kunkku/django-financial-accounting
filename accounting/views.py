@@ -31,16 +31,14 @@ class ReportView(TemplateView):
             raise Http404
 
         res['fy'] = fy
+        res['title'] = '{} {}'.format(self.title, fy)
         self.update_context(res, kwargs)
-        res['title'] += ' {}'.format(fy)
         return res
 
 
 class AccountView(ReportView):
 
     def update_context(self, context, args):
-        context['title'] = self.title
-
         fy = context['fy']
         context['accounts'] = (
             {
@@ -74,10 +72,10 @@ class GeneralLedgerView(AccountView):
 
 
 class JournalView(ReportView):
+    title = 'General Journal'
     template_name = 'accounting/journal.html'
 
     def update_context(self, context, args):
-        context['title'] = 'General Journal'
         txn_filter = {'fiscal_year': context['fy']}
 
         if 'code' in args:
