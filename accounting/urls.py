@@ -9,7 +9,7 @@ app_name = 'accounting'
 
 urlpatterns = (
     url(
-        r'^account_chart/(?P<fy>\w+)/$',
+        r'^account-chart/(?P<fy>\w+)/$',
         AccountChartView.as_view(),
         name='account_chart'
     ),
