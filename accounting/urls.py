@@ -3,7 +3,7 @@
 
 from django.conf.urls import *
 
-from accounting.views import *
+from .views import *
 
 app_name = 'accounting'
 

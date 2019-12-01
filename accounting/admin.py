@@ -1,11 +1,11 @@
-# Copyright (c) 2015-2018 Data King Ltd
+# Copyright (c) 2015-2019 Data King Ltd
 # See LICENSE file for license details
 
 from django.contrib import admin, messages
 from mptt.admin import MPTTModelAdmin
 
-from accounting.models import *
-from accounting.forms import *
+from .models import *
+from .forms import *
 
 
 class ContextMixin(object):

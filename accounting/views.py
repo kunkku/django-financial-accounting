@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 
 from datetime import date, timedelta
 
-from accounting.models import *
+from .models import *
 
 
 class ReportView(TemplateView):

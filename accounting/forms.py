@@ -1,9 +1,9 @@
-# Copyright (c) 2015-2018 Data King Ltd
+# Copyright (c) 2015-2019 Data King Ltd
 # See LICENSE file for license details
 
 from django import forms
 
-from accounting.models import *
+from .models import *
 
 class TransactionItemForm(forms.ModelForm):
     account = forms.ModelChoiceField(
