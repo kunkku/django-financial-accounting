@@ -11,9 +11,7 @@ import functools
 import operator
 import time
 
-
-def currency_display(amount):
-    return '{:0.2f}'.format(amount) if amount else '0.00'
+from . import display
 
 
 class DateRange(models.Model):
@@ -210,7 +208,7 @@ class Account(MPTTModel):
         )
 
     def balance_display(self, **kwargs):
-        return currency_display(self.balance_subtotal(**kwargs) * self.sign())
+        return display.currency(self.balance_subtotal(**kwargs) * self.sign())
     balance_display.short_description = 'balance'
 
     def transactions(self):
@@ -296,7 +294,7 @@ class Lot(models.Model):
         return self.account.balance(lot=self)
 
     def balance_display(self):
-        return currency_display(self.balance() * self.account.sign())
+        return display.currency(self.balance() * self.account.sign())
     balance_display.short_description = 'balance'
 
     def transactions(self):
@@ -365,7 +363,7 @@ class Transaction(models.Model):
         return TransactionItem.sum_amount(self.transactionitem_set)
 
     def balance_display(self):
-        return currency_display(self.balance())
+        return display.currency(self.balance())
     balance_display.short_description = 'balance'
 
     def commit(self):
@@ -445,10 +443,10 @@ class TransactionItem(models.Model):
         return res if res else 0
 
     def debit(self):
-        return currency_display(-self.amount) if self.amount < 0 else ''
+        return display.currency(-self.amount) if self.amount < 0 else ''
 
     def credit(self):
-        return currency_display(self.amount) if self.amount > 0 else ''
+        return display.currency(self.amount) if self.amount > 0 else ''
 
     def clean(self):
         try:

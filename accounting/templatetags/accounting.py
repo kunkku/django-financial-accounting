@@ -3,10 +3,10 @@
 
 from django import template
 
-from .. import models
+from .. import display
 
 register = template.Library()
 
 @register.filter
 def currency(amount):
-    return models.currency_display(amount)
+    return display.currency(amount)
