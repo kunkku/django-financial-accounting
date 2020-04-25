@@ -5,5 +5,5 @@
 {% load accounting %}
 
 {% block content %}
-{% account_chart accounts fy include_closing=include_closing %}
+{% account_chart accounts fy include_closing=include_closing zero_rows=zero_rows %}
 {% endblock %}

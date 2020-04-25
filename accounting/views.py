@@ -45,6 +45,10 @@ class AccountChartView(AccountView):
     title = 'Chart of Accounts'
     template_name = 'accounting/account_chart.html'
 
+    def update_context(self, context, args):
+        super(AccountChartView, self).update_context(context, args)
+        context['zero_rows'] = True
+
 class GeneralLedgerView(AccountView):
     title = 'General Ledger'
     template_name = 'accounting/general_ledger.html'
@@ -80,6 +84,7 @@ class AnnualReportView(AccountChartView):
             type__in=self.account_types
         )
         context['include_closing'] = 'NE' in self.account_types
+        context['zero_rows'] = False
 
 class BalanceSheetView(AnnualReportView):
     title = 'Balance Sheet'
