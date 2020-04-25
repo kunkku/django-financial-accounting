@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2020 Data King Ltd
+# Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
 from django.urls import path
@@ -8,6 +8,16 @@ from .views import *
 app_name = 'accounting'
 
 urlpatterns = (
+    path(
+        'balance-sheet/<str:fy>',
+        BalanceSheetView.as_view(),
+        name='balance_sheet'
+    ),
+    path(
+        'income-statement/<str:fy>',
+        IncomeStatementView.as_view(),
+        name='income_statement'
+    ),
     path(
         'account-chart/<str:fy>',
         AccountChartView.as_view(),

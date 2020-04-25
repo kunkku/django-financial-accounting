@@ -32,7 +32,7 @@ def transactions(account, fy):
     return account.transactions().filter(fiscal_year=fy, closing=False)
 
 @register.simple_tag
-def account_chart(accounts, fy):
+def account_chart(accounts, fy, include_closing=False):
     levels = max((account.get_level() for account in accounts)) + 1
     res = ''
     for account in accounts:
@@ -40,7 +40,9 @@ def account_chart(accounts, fy):
         res += format_html(
             '<tr>{indent}<td colspan="{span}">{account}</td>{indent}<td class="currency">{balance}</td></tr>',
             account=account,
-            balance=account.balance_display(date=fy.end),
+            balance=account.balance_display(
+                date=fy.end, include_closing=include_closing
+            ),
             indent=mark_safe('<td class="indent"></td>' * level),
             span=levels - level
         )

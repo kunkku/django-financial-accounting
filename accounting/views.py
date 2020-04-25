@@ -41,11 +41,9 @@ class AccountView(ReportView):
     def update_context(self, context, args):
         context['accounts'] = Account.objects.all()
 
-
 class AccountChartView(AccountView):
     title = 'Chart of Accounts'
     template_name = 'accounting/account_chart.html'
-
 
 class GeneralLedgerView(AccountView):
     title = 'General Ledger'
@@ -65,3 +63,20 @@ class JournalView(ReportView):
             txn_filter['journal'] = journal
 
         context['transactions'] = Transaction.objects.filter(**txn_filter)
+
+
+class AnnualReportView(AccountChartView):
+
+    def update_context(self, context, args):
+        context['accounts'] = Account.objects.filter(
+            type__in=self.account_types
+        )
+        context['include_closing'] = 'NE' in self.account_types
+
+class BalanceSheetView(AnnualReportView):
+    title = 'Balance Sheet'
+    account_types = ('As', 'Eq', 'NE', 'Li')
+
+class IncomeStatementView(AnnualReportView):
+    title = 'Income Statement'
+    account_types = ('In', 'Ex')
