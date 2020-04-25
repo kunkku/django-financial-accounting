@@ -5,7 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from datetime import date
+from datetime import date, timedelta
 
 from .models import *
 
@@ -68,6 +68,14 @@ class JournalView(ReportView):
 class AnnualReportView(AccountChartView):
 
     def update_context(self, context, args):
+        fy = context['fy']
+        try:
+            context['fy'] = (
+                fy, FiscalYear.by_date(fy.start - timedelta(days=1))
+            )
+        except FiscalYear.DoesNotExist:
+            pass
+
         context['accounts'] = Account.objects.filter(
             type__in=self.account_types
         )

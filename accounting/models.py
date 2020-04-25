@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2020 Data King Ltd
+# Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -45,6 +45,8 @@ class FiscalYear(DateRange):
             start=datetime.date(datetime.MINYEAR, 1, 1),
             end=datetime.date(date.year, 1, 1) - datetime.timedelta(days=1)
         )
+        if date < latest.start:
+            raise FiscalYear.DoesNotExist
         while latest.end < date:
             start = latest.end + datetime.timedelta(days=1)
             nm = start + datetime.timedelta(days=366)

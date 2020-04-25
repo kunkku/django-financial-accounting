@@ -4,6 +4,7 @@
 from django import template
 from django.utils.html import format_html, mark_safe
 
+from collections.abc import Iterable
 from datetime import timedelta
 
 from .. import display
@@ -31,19 +32,36 @@ def closing_balance(account, fy):
 def transactions(account, fy):
     return account.transactions().filter(fiscal_year=fy, closing=False)
 
+
+INDENT = '<td class="indent"></td>'
+
 @register.simple_tag
 def account_chart(accounts, fy, include_closing=False):
-    levels = max((account.get_level() for account in accounts)) + 1
+    max_level = max((account.get_level() for account in accounts))
+    fyears = fy if isinstance(fy, Iterable) else (fy,)
+
     res = ''
     for account in accounts:
         level = account.get_level()
-        res += format_html(
-            '<tr>{indent}<td colspan="{span}">{account}</td>{indent}<td class="currency">{balance}</td></tr>',
+        rlevel = max_level - level
+
+        left_pad = mark_safe(INDENT * level)
+        right_pad = mark_safe(INDENT * rlevel)
+
+        row = format_html(
+            '{indent}<td colspan="{span}">{account}</td>',
             account=account,
-            balance=account.balance_display(
-                date=fy.end, include_closing=include_closing
-            ),
-            indent=mark_safe('<td class="indent"></td>' * level),
-            span=levels - level
+            indent=left_pad,
+            span=rlevel + 1
         )
+        for fy in fyears:
+            row += format_html('{left_pad}<td class="currency">{balance}</td>{right_pad}',
+                balance=account.balance_display(
+                    date=fy.end, include_closing=include_closing
+                ),
+                left_pad=left_pad,
+                right_pad=right_pad
+            )
+        res += format_html('<tr>{}</tr>', mark_safe(row))
+
     return format_html('<table>{}</table>', mark_safe(res))
