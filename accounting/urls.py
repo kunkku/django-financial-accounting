@@ -1,31 +1,27 @@
-# Copyright (c) 2015-2019 Data King Ltd
+# Copyright (c) 2015-2020 Data King Ltd
 # See LICENSE file for license details
 
-from django.conf.urls import *
+from django.urls import path
 
 from .views import *
 
 app_name = 'accounting'
 
 urlpatterns = (
-    url(
-        r'^account-chart/(?P<fy>\w+)/$',
+    path(
+        'account-chart/<str:fy>',
         AccountChartView.as_view(),
         name='account_chart'
     ),
-    url(
-        r'^general-ledger/(?P<fy>\w+)/$',
+    path(
+        'general-ledger/<str:fy>',
         GeneralLedgerView.as_view(),
         name='general_ledger'
     ),
-    url(
-        r'^general-journal/(?P<fy>\w+)/$',
+    path(
+        'general-journal/<str:fy>',
         JournalView.as_view(),
         name='general_journal'
     ),
-    url(
-        r'^journal/(?P<fy>\w+)/(?P<code>[^/]+)/$',
-        JournalView.as_view(),
-        name='journal'
-    )
+    path('journal/<str:fy>/<str:code>', JournalView.as_view(), name='journal')
 )
