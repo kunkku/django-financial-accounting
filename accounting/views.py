@@ -1,11 +1,11 @@
-# Copyright (c) 2015-2019 Data King Ltd
+# Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from datetime import date, timedelta
+from datetime import date
 
 from .models import *
 
@@ -39,36 +39,17 @@ class ReportView(TemplateView):
 class AccountView(ReportView):
 
     def update_context(self, context, args):
-        fy = context['fy']
-        context['accounts'] = (
-            {
-                'model': account,
-                'opening_balance': self.get_balance(
-                    account, date=fy.start - timedelta(1), include_closing=True
-                ),
-                'closing_balance': self.get_balance(account, date=fy.end),
-                'transactions': account.transactions().filter(
-                    fiscal_year=fy, closing=False
-                ),
-                'indentation': '&nbsp;' * 10 * account.get_level()
-            } for account in Account.objects.all()
-        )
+        context['accounts'] = Account.objects.all()
 
 
 class AccountChartView(AccountView):
     title = 'Chart of Accounts'
     template_name = 'accounting/account_chart.html'
 
-    def get_balance(self, account, **kwargs):
-        return account.balance_display(**kwargs)
-
 
 class GeneralLedgerView(AccountView):
     title = 'General Ledger'
     template_name = 'accounting/general_ledger.html'
-
-    def get_balance(self, account, **kwargs):
-        return account.balance(**kwargs) * account.sign()
 
 
 class JournalView(ReportView):

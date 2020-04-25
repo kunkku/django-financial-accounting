@@ -1,27 +1,32 @@
-{# Copyright (c) 2015-2016 Data King Ltd #}
+{# Copyright (c) 2015-2022 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% extends "accounting/report.html" %}
+{% load accounting %}
 
 {% block content %}
 
 {% for account in accounts %}
-{% if account.opening_balance or account.transactions %}
-<h2>{{ account.model }}</h2>
+{% with ob=account|opening_balance:fy txns=account|transactions:fy %}
+{% if ob or txns %}
+<h2>{{ account }}</h2>
 
-{% if account.opening_balance %}
-<p>Opening balance on {{ fy.start }}: {{ account.opening_balance }}</p>
+{% if ob %}
+<p>Opening balance on {{ fy.start }}: {{ ob|currency }}</p>
 {% endif %}
 
-{% with account=account.model transactions=account.transactions %}
+{% with account=account transactions=txns %}
 {% include "accounting/includes/transaction_list.html" %}
 {% endwith %}
 
-{% if account.closing_balance %}
-<p>Closing balance on {{ fy.end }}: {{ account.closing_balance }}</p>
+{% with cb=account|closing_balance:fy %}
+{% if cb %}
+<p>Closing balance on {{ fy.end }}: {{ cb|currency }}</p>
 {% endif %}
+{% endwith %}
 
 {% endif %}
+{% endwith %}
 {% endfor %}
 
 {% endblock %}
