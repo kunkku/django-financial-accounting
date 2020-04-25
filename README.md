@@ -45,14 +45,6 @@ follows:
         description='Share issue'
     )
 
-    txn.transactionitem_set.create(
-        account=Account.objects.get(code='1100'),
-        amount=-10000
-    )
-
-    txn.transactionitem_set.create(
-        account=Account.objects.get(code='3100'),
-        amount=10000
-    )
-
+    txn.items.create(account=Account.objects.get(code='1100'), amount=-10000)
+    txn.items.create(account=Account.objects.get(code='3100'), amount=10000)
     txn.commit()

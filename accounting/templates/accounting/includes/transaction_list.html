@@ -1,4 +1,4 @@
-{# Copyright (c) 2015-2016 Data King Ltd #}
+{# Copyright (c) 2015-2020 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% if transactions %}
@@ -31,7 +31,7 @@
       <td></td>
       <td></td>
     </tr>
-    {% for item in txn.transactionitem_set.all %}
+    {% for item in txn.items.all %}
     {% if not account or item.account.pk == account.pk %}
     {% if not lot or item.lot.pk == lot.pk %}
     <tr>

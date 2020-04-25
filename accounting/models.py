@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2019 Data King Ltd
+# Copyright (c) 2015-2020 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -81,12 +81,12 @@ class FiscalYear(DateRange):
                     description='Net earnings during fiscal year ' + str(self),
                     closing=True
                 )
-            txn.transactionitem_set.create(account=account, amount=-balance)
+            txn.items.create(account=account, amount=-balance)
             profit += balance
 
         if txn:
             if profit:
-                txn.transactionitem_set.create(
+                txn.items.create(
                     account=Account.objects.get(type='NE'), amount=profit
                 )
             txn.commit()
@@ -196,9 +196,7 @@ class Account(MPTTModel):
         if lot:
             txn_filter &= models.Q(lot=lot)
 
-        return TransactionItem.sum_amount(
-            self.transactionitem_set.filter(txn_filter)
-        )
+        return TransactionItem.sum_amount(self.items.filter(txn_filter))
 
     def balance_subtotal(self, **kwargs):
         return functools.reduce(
@@ -213,13 +211,13 @@ class Account(MPTTModel):
 
     def transactions(self):
         return Transaction.objects.filter(
-            state='C', transactionitem__account=self
+            state='C', item__account=self
         ).distinct()
 
     def lots(self):
         return Lot.objects.filter(
             pk__in=[
-                r['lot'] for r in self.transactionitem_set.filter(
+                r['lot'] for r in self.items.filter(
                     transaction__state='C', lot__isnull=False
                 ).values('lot').annotate(
                     models.Sum('amount')
@@ -244,20 +242,19 @@ class Account(MPTTModel):
         def update(key, comparison):
             for period in FiscalPeriod.objects.filter(
                 models.Q(transaction__state='C') &
-                models.Q(transaction__transactionitem__account=self) &
+                models.Q(transaction__item__account=self) &
                 models.Q(
                     **{
                         (
-                            'transaction__transactionitem__amount__' +
-                            comparison
+                            'transaction__item__amount__' + comparison
                         ): 0
                     }
                 )
             ).annotate(
-                models.Sum('transaction__transactionitem__amount')
+                models.Sum('transaction__item__amount')
             ):
                 totals[period][key] = abs(
-                    period.transaction__transactionitem__amount__sum
+                    period.transaction__item__amount__sum
                 )
 
         for key, comparison in keys.items():
@@ -298,7 +295,7 @@ class Lot(models.Model):
     balance_display.short_description = 'balance'
 
     def transactions(self):
-        return Transaction.objects.filter(state='C', transactionitem__lot=self)
+        return Transaction.objects.filter(state='C', item__lot=self)
 
     class Meta:
         ordering = ('account__order', 'fiscal_year__start', 'number')
@@ -360,7 +357,7 @@ class Transaction(models.Model):
     closing = models.BooleanField(default=False, editable=False)
 
     def balance(self):
-        return TransactionItem.sum_amount(self.transactionitem_set)
+        return TransactionItem.sum_amount(self.items)
 
     def balance_display(self):
         return display.currency(self.balance())
@@ -370,7 +367,7 @@ class Transaction(models.Model):
         if self.state != 'D':
             raise ValidationError('Transaction {} already closed'.format(self))
 
-        if not self.transactionitem_set.all():
+        if not self.items.all():
             raise ValidationError('Cannot commit an empty transaction')
 
         if self.balance():
@@ -385,7 +382,7 @@ class Transaction(models.Model):
                 'Fiscal year {} already closed'.format(self.fiscal_year)
             )
 
-        for item in self.transactionitem_set.all():
+        for item in self.items.all():
             if item.account.lot_tracking and not item.lot:
                 params = {
                     'fiscal_year': self.fiscal_year, 'account': item.account
@@ -429,11 +426,27 @@ class Transaction(models.Model):
 
 
 class TransactionItem(models.Model):
-    transaction = models.ForeignKey(Transaction, on_delete=models.PROTECT)
-    account = models.ForeignKey(
-	Account, limit_choices_to={'frozen': False}, on_delete=models.PROTECT
+    transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.PROTECT,
+        related_name='items',
+        related_query_name='item'
     )
-    lot = models.ForeignKey(Lot, blank=True, null=True, on_delete=models.PROTECT)
+    account = models.ForeignKey(
+        Account,
+        limit_choices_to={'frozen': False},
+        on_delete=models.PROTECT,
+        related_name='items',
+        related_query_name='item'
+    )
+    lot = models.ForeignKey(
+        Lot,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='items',
+        related_query_name='item'
+    )
     amount = models.DecimalField(max_digits=16, decimal_places=2)
     description = models.CharField(max_length=64, blank=True)
 
