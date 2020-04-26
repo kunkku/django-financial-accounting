@@ -38,7 +38,12 @@ def transactions(account, fy):
 
 @register.simple_tag
 def account_chart(
-    accounts, fy, include_closing=False, post_totals=False, zero_rows=True
+    accounts,
+    fy,
+    include_closing=False,
+    post_totals=False,
+    signed=False,
+    zero_rows=True
 ):
     fyears = tuple(fy) if isinstance(fy, Iterable) else (fy,)
 
@@ -60,7 +65,7 @@ def account_chart(
         balances = [
             account.balance_subtotal(
                 date=fy.end, include_closing=include_closing
-            ) * account.sign() for fy in fyears
+            ) * (1 if signed else account.sign()) for fy in fyears
         ]
         if zero_rows or any(balances):
             show = len(stack)

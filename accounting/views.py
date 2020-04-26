@@ -85,6 +85,7 @@ class AnnualReportView(AccountChartView):
         )
         context['include_closing'] = 'NE' in self.account_types
         context['post_totals'] = True
+        context['signed'] = 'Ex' in self.account_types
         context['zero_rows'] = False
 
 class BalanceSheetView(AnnualReportView):
