@@ -8,6 +8,7 @@ from mptt.utils import tree_item_iterator
 
 from collections.abc import Iterable
 from datetime import timedelta
+from itertools import count
 
 from .. import display
 
@@ -35,11 +36,11 @@ def transactions(account, fy):
     return account.transactions().filter(fiscal_year=fy, closing=False)
 
 
-INDENT = '<td class="indent"></td>'
-
 @register.simple_tag
-def account_chart(accounts, fy, include_closing=False, zero_rows=True):
-    fyears = fy if isinstance(fy, Iterable) else (fy,)
+def account_chart(
+    accounts, fy, include_closing=False, post_totals=False, zero_rows=True
+):
+    fyears = tuple(fy) if isinstance(fy, Iterable) else (fy,)
 
     stack = [([],)]
     show = 0
@@ -69,32 +70,63 @@ def account_chart(accounts, fy, include_closing=False, zero_rows=True):
         for _ in info['closed_levels']:
             flush()
 
-    def render(specs, level):
-        span = max_show - level
-        left_pad = mark_safe(INDENT * level)
-        right_pad = mark_safe(INDENT * (span - 1))
+    empty_cols = ('',) * len(fyears)
+
+    def render(specs, level, right_cols):
+        indent = mark_safe('<td class="indent"></td>' * level)
+
+        left_span = max_show - len(right_cols) - 1
+        left_col = mark_safe(
+            format_html('<td colspan="{}">', left_span) if left_span else ''
+        )
 
         res = ''
 
-        for children, account, balances in specs:
+        for i, (children, account, balances) in zip(count(), specs):
+            last = i == len(specs) - 1
+            if post_totals:
+                child_rcols = (
+                    [
+                        [display.currency(balance) for balance in balances]
+                    ] if len(children) > 1 else []
+                ) + [
+                    fy_rcols if last else empty_cols for fy_rcols in right_cols
+                ]
+            else:
+                child_rcols = right_cols[1:]
+
             res += format_html(
                 '<tr>{indent}<td colspan="{span}">{account}</td>{balances}</tr>{children}',
                 account=account,
-                balances=mark_safe(
+                balances='' if post_totals and children else mark_safe(
                     ''.join(
                         format_html(
-                            '{left_pad}<td class="currency">{balance}</td>{right_pad}',
+                            '{left_col}<td class="currency">{balance}</td>{right_cols}',
                             balance=display.currency(balance),
-                            left_pad=left_pad,
-                            right_pad=right_pad
-                        ) for balance in balances
+                            left_col=left_col,
+                            right_cols=mark_safe(
+                                ''.join(
+                                    format_html(
+                                        '<td class="currency">{}</td>',
+                                        fy_rcols[j] if last else ''
+                                    ) for fy_rcols in right_cols
+                                )
+                            )
+                        ) for j, balance in zip(count(), balances)
                     )
                 ),
-                children=render(children, level + 1),
-                indent=left_pad,
-                span=span
+                children=render(children, level + 1, child_rcols),
+                indent=indent,
+                span=max_show - level
             )
 
         return mark_safe(res)
 
-    return format_html('<table>{}</table>', render(stack[0][0], 0))
+    return format_html(
+        '<table>{}</table>',
+        render(
+            stack[0][0],
+            0,
+            () if post_totals else (empty_cols,) * (max_show - 1)
+        )
+    )
