@@ -73,7 +73,7 @@ class FiscalYear(DateRange):
         for account in Account.objects.all():
             if account.type not in ('In', 'Ex'):
                 continue
-            balance = account.balance(self.end)
+            balance = account.get_balance(self.end)
             if not balance:
                 continue
             if not txn:
@@ -187,7 +187,7 @@ class Account(MPTTModel):
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
-    def balance(self, date=None, include_closing=False, lot=None):
+    def get_balance(self, date=None, include_closing=False, lot=None):
         txn_filter = models.Q(transaction__state='C')
 
         if date:
@@ -205,7 +205,7 @@ class Account(MPTTModel):
         return functools.reduce(
             operator.add,
             (account.balance_subtotal(**kwargs) for account in self.children.all()),
-            self.balance(**kwargs)
+            self.get_balance(**kwargs)
         )
 
     def balance_display(self, **kwargs):
@@ -291,7 +291,7 @@ class Lot(models.Model):
     number = models.IntegerField(editable=False)
 
     def balance(self):
-        return self.account.balance(lot=self)
+        return self.account.get_balance(lot=self)
 
     def balance_display(self):
         return display.currency(self.balance() * self.account.sign)

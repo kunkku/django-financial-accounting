@@ -19,7 +19,7 @@ def currency(amount):
     return display.currency(amount)
 
 def adjusted_balance(account, **kwargs):
-    return account.balance(**kwargs) * account.sign
+    return account.get_balance(**kwargs) * account.sign
 
 @register.filter
 def opening_balance(account, fy):
