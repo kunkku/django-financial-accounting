@@ -296,11 +296,12 @@ class Lot(models.Model):
     )
     number = models.IntegerField(editable=False)
 
+    @property
     def balance(self):
         return self.account.get_balance(lot=self)
 
     def balance_display(self):
-        return display.currency(self.balance() * self.account.sign)
+        return display.currency(self.balance * self.account.sign)
     balance_display.short_description = 'balance'
 
     def transactions(self):
