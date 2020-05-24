@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2019 Data King Ltd
+# Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
 from django import forms
@@ -46,7 +46,7 @@ class TransactionItemForm(forms.ModelForm):
         for account in Account.objects.filter(frozen=False).all():
             targets.append((account.pk, str(account)))
             if account.lot_tracking:
-                for lot in account.lots():
+                for lot in account.lots:
                     targets.append(
                         (
                             '{} {}'.format(account.pk, lot.pk),

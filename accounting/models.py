@@ -221,6 +221,7 @@ class Account(MPTTModel):
             state='C', item__account=self
         ).distinct()
 
+    @property
     def lots(self):
         return Lot.objects.filter(
             pk__in=[
