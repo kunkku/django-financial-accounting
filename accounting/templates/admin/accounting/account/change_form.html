@@ -1,4 +1,4 @@
-{# Copyright (c) 2015-2019 Data King Ltd #}
+{# Copyright (c) 2015-2022 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% extends "accounting/transaction_list.html" %}
@@ -38,7 +38,7 @@
   {% for lot in account.lots %}
   <tr>
     <td>{{ lot }}</td>
-    <td>{{ lot.balance_display }}</td>
+    <td>{{ lot.get_balance_display }}</td>
   </tr>
   {% endfor %}
 </table>

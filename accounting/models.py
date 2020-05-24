@@ -300,9 +300,9 @@ class Lot(models.Model):
     def balance(self):
         return self.account.get_balance(lot=self)
 
-    def balance_display(self):
+    def get_balance_display(self):
         return display.currency(self.balance * self.account.sign)
-    balance_display.short_description = 'balance'
+    get_balance_display.short_description = 'balance'
 
     def transactions(self):
         return Transaction.objects.filter(state='C', item__lot=self)

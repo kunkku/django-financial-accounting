@@ -51,7 +51,7 @@ class TransactionItemForm(forms.ModelForm):
                         (
                             '{} {}'.format(account.pk, lot.pk),
                             '{}: {} ({})'.format(
-                                account, lot, lot.balance_display()
+                                account, lot, lot.get_balance_display()
                             )
                         )
                     )
