@@ -372,9 +372,9 @@ class Transaction(models.Model):
     def balance(self):
         return TransactionItem.sum_amount(self.items)
 
-    def balance_display(self):
+    def get_balance_display(self):
         return display.currency(self.balance)
-    balance_display.short_description = 'balance'
+    get_balance_display.short_description = 'balance'
 
     def commit(self):
         if self.state != 'D':

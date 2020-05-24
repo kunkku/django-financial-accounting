@@ -110,7 +110,7 @@ class TransactionAdmin(ContextAdmin):
     model = Transaction
     ordering = ('-state', '-date', '-journal__code', '-number', '-id')
     list_display = (
-        Transaction.__str__, 'state', 'date', Transaction.balance_display
+        Transaction.__str__, 'state', 'date', Transaction.get_balance_display
     )
     list_filter = ('state',)
     inlines = (TransactionItemInline,)
