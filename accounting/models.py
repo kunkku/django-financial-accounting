@@ -233,6 +233,7 @@ class Account(MPTTModel):
             ]
         ).all()
 
+    @property
     def period_totals(self):
         keys = {'debit': 'lt', 'credit': 'gt'}
 
@@ -269,7 +270,7 @@ class Account(MPTTModel):
             update(key, comparison)
 
         for child in self.children.all():
-            for cpt in child.period_totals():
+            for cpt in child.period_totals:
                 pt = totals[cpt['period']]
                 for key in keys:
                     pt[key] += cpt[key]
