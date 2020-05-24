@@ -304,6 +304,7 @@ class Lot(models.Model):
         return display.currency(self.balance * self.account.sign)
     get_balance_display.short_description = 'balance'
 
+    @property
     def transactions(self):
         return Transaction.objects.filter(state='C', item__lot=self)
 

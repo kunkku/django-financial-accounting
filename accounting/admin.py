@@ -85,9 +85,7 @@ class LotAdmin(ContextAdmin):
 
     def get_context(self, lot):
         return {
-            'transactions': lot.transactions(),
-            'account': lot.account,
-            'lot': lot
+            'transactions': lot.transactions, 'account': lot.account, 'lot': lot
         }
 
 admin.site.register(Lot, LotAdmin)
