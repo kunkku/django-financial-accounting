@@ -368,11 +368,12 @@ class Transaction(models.Model):
     )
     closing = models.BooleanField(default=False, editable=False)
 
+    @property
     def balance(self):
         return TransactionItem.sum_amount(self.items)
 
     def balance_display(self):
-        return display.currency(self.balance())
+        return display.currency(self.balance)
     balance_display.short_description = 'balance'
 
     def commit(self):
@@ -382,7 +383,7 @@ class Transaction(models.Model):
         if not self.items.all():
             raise ValidationError('Cannot commit an empty transaction')
 
-        if self.balance():
+        if self.balance:
             raise ValidationError('Imbalanced transaction')
 
         if not self.date:
