@@ -41,6 +41,7 @@ def account_chart(
     accounts,
     fy,
     include_closing=False,
+    lots=False,
     post_totals=False,
     signed=False,
     zero_rows=True
@@ -64,11 +65,23 @@ def account_chart(
             max_show = max(max_show, show)
         stack.append(([], account, balances))
 
+    def flush():
+        nonlocal stack, show
+        spec = stack.pop()
+        if len(stack) == show:
+            stack[-1][0].append(spec)
+            show -= 1
+        return spec[1]
+
     for _, acct, next_acct in previous_current_next(accounts):
         if not first:
             first = acct
 
         append(acct)
+        if lots:
+            for lot in acct.get_lots():
+                append(lot)
+                flush()
 
         ancs = list((next_acct or first).get_ancestors())
         if not next_acct:
@@ -78,12 +91,9 @@ def account_chart(
                     break
 
         while stack[-1][1] not in ancs:
-            spec = stack.pop()
-            if len(stack) == show:
-                stack[-1][0].append(spec)
-                show -= 1
+            acc = flush()
             if len(stack) == 1:
-                parent = spec[1].parent
+                parent = acc.parent
                 if not parent or parent in ancs:
                     break
                 append(parent)

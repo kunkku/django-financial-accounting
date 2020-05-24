@@ -70,20 +70,25 @@ class JournalView(ReportView):
 
 
 class AnnualReportView(AccountChartView):
+    breakdown = False
 
     def update_context(self, context, args):
-        fy = context['fy']
-        try:
-            context['fy'] = (
-                fy, FiscalYear.by_date(fy.start - timedelta(days=1))
-            )
-        except FiscalYear.DoesNotExist:
-            pass
+        if not self.breakdown:
+            fy = context['fy']
+            try:
+                context['fy'] = (
+                    fy, FiscalYear.by_date(fy.start - timedelta(days=1))
+                )
+            except FiscalYear.DoesNotExist:
+                pass
 
-        context['accounts'] = Account.objects.filter(
-            public=True, type__in=self.account_types
-        )
+        accounts = Account.objects.filter(type__in=self.account_types)
+        if not self.breakdown:
+            accounts = accounts.filter(public=True)
+
+        context['accounts'] = accounts
         context['include_closing'] = 'NE' in self.account_types
+        context['lots'] = self.breakdown
         context['post_totals'] = True
         context['signed'] = 'Ex' in self.account_types
         context['zero_rows'] = False
@@ -95,3 +100,7 @@ class BalanceSheetView(AnnualReportView):
 class IncomeStatementView(AnnualReportView):
     title = 'Income Statement'
     account_types = ('In', 'Ex')
+
+class BalanceSheetBreakdownView(BalanceSheetView):
+    title = 'Balance Sheet Breakdown'
+    breakdown = True

@@ -224,13 +224,15 @@ class Account(MPTTModel):
 
     @property
     def lots(self):
+        return self.get_lots(True)
+
+    def get_lots(self, active_only=False):
         return Lot.objects.filter(
             pk__in=[
                 r['lot'] for r in self.items.filter(
                     transaction__state='C', lot__isnull=False
-                ).values('lot').annotate(
-                    models.Sum('amount')
-                ) if r['amount__sum']
+                ).values('lot').annotate(models.Sum('amount'))
+                if not active_only or r['amount__sum']
             ]
         ).all()
 
@@ -298,8 +300,18 @@ class Lot(models.Model):
     number = models.IntegerField(editable=False)
 
     @property
+    def sign(self):
+        return self.account.sign
+
+    @property
     def balance(self):
-        return self.account.get_balance(lot=self)
+        return self.get_balance()
+
+    def get_balance(self, **kwargs):
+        return self.account.get_balance(lot=self, **kwargs)
+
+    def get_total_balance(self, **kwargs):
+        return self.get_balance(**kwargs)
 
     def get_balance_display(self):
         return display.currency(self.balance * self.account.sign)

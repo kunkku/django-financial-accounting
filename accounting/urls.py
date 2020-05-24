@@ -19,6 +19,11 @@ urlpatterns = (
         name='income_statement'
     ),
     path(
+        'balance-sheet-breakdown/<str:fy>',
+        BalanceSheetBreakdownView.as_view(),
+        name='balance_sheet_breakdown'
+    ),
+    path(
         'account-chart/<str:fy>',
         AccountChartView.as_view(),
         name='account_chart'

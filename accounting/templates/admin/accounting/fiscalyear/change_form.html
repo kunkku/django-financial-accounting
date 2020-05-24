@@ -1,4 +1,4 @@
-{# Copyright (c) 2015-2020 Data King Ltd #}
+{# Copyright (c) 2015-2022 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% extends "admin/change_form.html" %}
@@ -10,6 +10,9 @@
 </p>
 <p>
   <a href="{% url "accounting:income_statement" fy=fy %}">View income statement</a>
+</p>
+<p>
+  <a href="{% url "accounting:balance_sheet_breakdown" fy=fy %}">View balance sheet breakdown</a>
 </p>
 <p>
   <a href="{% url "accounting:account_chart" fy=fy %}">View chart of accounts</a>
