@@ -211,9 +211,9 @@ class Account(MPTTModel):
             self.get_balance(**kwargs)
         )
 
-    def balance_display(self, **kwargs):
+    def get_balance_display(self, **kwargs):
         return display.currency(self.get_total_balance(**kwargs) * self.sign)
-    balance_display.short_description = 'balance'
+    get_balance_display.short_description = 'balance'
 
     def transactions(self):
         return Transaction.objects.filter(

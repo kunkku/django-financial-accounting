@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2019 Data King Ltd
+# Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
 from django.contrib import admin, messages
@@ -69,7 +69,7 @@ class AccountAdmin(ContextMixin, MPTTModelAdmin):
         'type',
         'frozen',
         'lot_tracking',
-        Account.balance_display
+        Account.get_balance_display
     )
 
     def get_context(self, account):
