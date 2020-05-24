@@ -81,7 +81,7 @@ class AnnualReportView(AccountChartView):
             pass
 
         context['accounts'] = Account.objects.filter(
-            type__in=self.account_types
+            public=True, type__in=self.account_types
         )
         context['include_closing'] = 'NE' in self.account_types
         context['post_totals'] = True

@@ -50,24 +50,43 @@ def account_chart(
     stack = [([],)]
     show = 0
     max_show = 1
+    first = None
 
-    for _, acct, next_acct in previous_current_next(accounts):
+    def append(account):
+        nonlocal stack, show, max_show
         balances = [
-            acct.get_total_balance(
+            account.get_total_balance(
                 date=fy.end, include_closing=include_closing
             ) * (1 if signed else account.sign) for fy in fyears
         ]
         if zero_rows or any(balances):
             show = len(stack)
             max_show = max(max_show, show)
-        stack.append(([], acct, balances))
+        stack.append(([], account, balances))
 
-        ancs = next_acct.get_ancestors().all() if next_acct else ()
-        while len(stack) > 1 and stack[-1][1] not in ancs:
+    for _, acct, next_acct in previous_current_next(accounts):
+        if not first:
+            first = acct
+
+        append(acct)
+
+        ancs = list((next_acct or first).get_ancestors())
+        if not next_acct:
+            for anc in acct.get_ancestors(ascending=True):
+                if anc in ancs:
+                    ancs.remove(anc)
+                    break
+
+        while stack[-1][1] not in ancs:
             spec = stack.pop()
             if len(stack) == show:
                 stack[-1][0].append(spec)
                 show -= 1
+            if len(stack) == 1:
+                parent = spec[1].parent
+                if not parent or parent in ancs:
+                    break
+                append(parent)
 
     empty_cols = ('',) * len(fyears)
 
