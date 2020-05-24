@@ -4,7 +4,7 @@
 from django import template
 from django.utils.html import format_html, mark_safe
 
-from mptt.utils import tree_item_iterator
+from mptt.utils import previous_current_next
 
 from collections.abc import Iterable
 from datetime import timedelta
@@ -51,29 +51,23 @@ def account_chart(
     show = 0
     max_show = 1
 
-    def flush():
-        nonlocal stack, show
-        spec = stack.pop()
-        if len(stack) == show:
-            stack[-1][0].append(spec)
-            show -= 1
-
-    for account, info in tree_item_iterator(accounts):
-        if not info['new_level']:
-            flush()
-
+    for _, acct, next_acct in previous_current_next(accounts):
         balances = [
-            account.get_total_balance(
+            acct.get_total_balance(
                 date=fy.end, include_closing=include_closing
             ) * (1 if signed else account.sign) for fy in fyears
         ]
         if zero_rows or any(balances):
             show = len(stack)
             max_show = max(max_show, show)
-        stack.append(([], account, balances))
+        stack.append(([], acct, balances))
 
-        for _ in info['closed_levels']:
-            flush()
+        ancs = next_acct.get_ancestors().all() if next_acct else ()
+        while len(stack) > 1 and stack[-1][1] not in ancs:
+            spec = stack.pop()
+            if len(stack) == show:
+                stack[-1][0].append(spec)
+                show -= 1
 
     empty_cols = ('',) * len(fyears)
 
