@@ -63,7 +63,7 @@ def account_chart(
             flush()
 
         balances = [
-            account.balance_subtotal(
+            account.get_total_balance(
                 date=fy.end, include_closing=include_closing
             ) * (1 if signed else account.sign) for fy in fyears
         ]

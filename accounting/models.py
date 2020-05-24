@@ -201,15 +201,18 @@ class Account(MPTTModel):
 
         return TransactionItem.sum_amount(self.items.filter(txn_filter))
 
-    def balance_subtotal(self, **kwargs):
+    def get_total_balance(self, **kwargs):
         return functools.reduce(
             operator.add,
-            (account.balance_subtotal(**kwargs) for account in self.children.all()),
+            (
+                account.get_total_balance(**kwargs) \
+                    for account in self.children.all()
+            ),
             self.get_balance(**kwargs)
         )
 
     def balance_display(self, **kwargs):
-        return display.currency(self.balance_subtotal(**kwargs) * self.sign)
+        return display.currency(self.get_total_balance(**kwargs) * self.sign)
     balance_display.short_description = 'balance'
 
     def transactions(self):
