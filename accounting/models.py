@@ -183,6 +183,7 @@ class Account(MPTTModel):
         if parent_changed:
             update(old_parent)
 
+    @property
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
@@ -208,7 +209,7 @@ class Account(MPTTModel):
         )
 
     def balance_display(self, **kwargs):
-        return display.currency(self.balance_subtotal(**kwargs) * self.sign())
+        return display.currency(self.balance_subtotal(**kwargs) * self.sign)
     balance_display.short_description = 'balance'
 
     def transactions(self):
@@ -269,7 +270,7 @@ class Account(MPTTModel):
                     pt[key] += cpt[key]
 
         for pt in totals.values():
-            pt['balance'] = (pt['credit'] - pt['debit']) * self.sign()
+            pt['balance'] = (pt['credit'] - pt['debit']) * self.sign
 
         return list(totals.values())
 
@@ -293,7 +294,7 @@ class Lot(models.Model):
         return self.account.balance(lot=self)
 
     def balance_display(self):
-        return display.currency(self.balance() * self.account.sign())
+        return display.currency(self.balance() * self.account.sign)
     balance_display.short_description = 'balance'
 
     def transactions(self):

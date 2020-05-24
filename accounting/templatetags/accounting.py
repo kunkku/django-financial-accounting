@@ -19,7 +19,7 @@ def currency(amount):
     return display.currency(amount)
 
 def adjusted_balance(account, **kwargs):
-    return account.balance(**kwargs) * account.sign()
+    return account.balance(**kwargs) * account.sign
 
 @register.filter
 def opening_balance(account, fy):
@@ -65,7 +65,7 @@ def account_chart(
         balances = [
             account.balance_subtotal(
                 date=fy.end, include_closing=include_closing
-            ) * (1 if signed else account.sign()) for fy in fyears
+            ) * (1 if signed else account.sign) for fy in fyears
         ]
         if zero_rows or any(balances):
             show = len(stack)
