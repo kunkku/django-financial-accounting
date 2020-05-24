@@ -33,7 +33,7 @@ def closing_balance(account, fy):
 
 @register.filter
 def transactions(account, fy):
-    return account.transactions().filter(fiscal_year=fy, closing=False)
+    return account.transactions.filter(fiscal_year=fy, closing=False)
 
 
 @register.simple_tag

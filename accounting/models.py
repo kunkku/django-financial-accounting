@@ -215,6 +215,7 @@ class Account(MPTTModel):
         return display.currency(self.get_total_balance(**kwargs) * self.sign)
     get_balance_display.short_description = 'balance'
 
+    @property
     def transactions(self):
         return Transaction.objects.filter(
             state='C', item__account=self

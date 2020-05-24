@@ -73,7 +73,7 @@ class AccountAdmin(ContextMixin, MPTTModelAdmin):
     )
 
     def get_context(self, account):
-        return {'transactions': account.transactions(), 'account': account}
+        return {'transactions': account.transactions, 'account': account}
 
 admin.site.register(Account, AccountAdmin)
 
