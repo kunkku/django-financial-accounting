@@ -330,6 +330,7 @@ class Journal(models.Model):
             ).aggregate(models.Max('number'))['number__max'] or 0
         ) + 1
 
+    @property
     def transactions(self):
         return self.transaction_set.filter(state='C')
 

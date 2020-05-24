@@ -97,7 +97,7 @@ class JournalAdmin(ContextAdmin):
     change_form_template = 'accounting/transaction_list.html'
 
     def get_context(self, journal):
-        return {'transactions': journal.transactions()}
+        return {'transactions': journal.transactions}
 
 admin.site.register(Journal, JournalAdmin)
 
