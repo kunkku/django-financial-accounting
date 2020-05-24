@@ -145,6 +145,7 @@ class Account(MPTTModel):
             ('Ex', 'Expense')
         )
     )
+    public = models.BooleanField()
     frozen = models.BooleanField()
     lot_tracking = models.BooleanField()
 

@@ -6,6 +6,7 @@
     parent: null
     order: '1000'
     type: As
+    public: false
     frozen: true
     lot_tracking: false
     lft: 1
@@ -20,6 +21,7 @@
     parent: 1
     order: '1000'
     type: As
+    public: true
     frozen: true
     lot_tracking: false
     lft: 2
@@ -34,6 +36,7 @@
     parent: 2
     order: '1100'
     type: As
+    public: true
     frozen: true
     lot_tracking: false
     lft: 3
@@ -48,6 +51,7 @@
     parent: 3
     order: '1100'
     type: As
+    public: true
     frozen: false
     lot_tracking: false
     lft: 4
@@ -62,6 +66,7 @@
     parent: 3
     order: '1200'
     type: As
+    public: true
     frozen: false
     lot_tracking: true
     lft: 6
@@ -76,6 +81,7 @@
     parent: 3
     order: '1300'
     type: As
+    public: true
     frozen: false
     lot_tracking: false
     lft: 8
@@ -90,6 +96,7 @@
     parent: 3
     order: '1400'
     type: As
+    public: true
     frozen: false
     lot_tracking: true
     lft: 10
@@ -104,6 +111,7 @@
     parent: 2
     order: '1500'
     type: As
+    public: true
     frozen: true
     lot_tracking: false
     lft: 13
@@ -118,6 +126,7 @@
     parent: 8
     order: '1500'
     type: As
+    public: true
     frozen: false
     lot_tracking: false
     lft: 14
@@ -132,6 +141,7 @@
     parent: 8
     order: '1600'
     type: As
+    public: true
     frozen: false
     lot_tracking: false
     lft: 16
@@ -146,6 +156,7 @@
     parent: 1
     order: '2000'
     type: Li
+    public: true
     frozen: true
     lot_tracking: false
     lft: 20
@@ -160,6 +171,7 @@
     parent: 11
     order: '2100'
     type: Li
+    public: true
     frozen: true
     lot_tracking: false
     lft: 21
@@ -174,6 +186,7 @@
     parent: 12
     order: '2100'
     type: Li
+    public: true
     frozen: false
     lot_tracking: false
     lft: 22
@@ -188,6 +201,7 @@
     parent: 12
     order: '2200'
     type: Li
+    public: true
     frozen: false
     lot_tracking: true
     lft: 24
@@ -202,6 +216,7 @@
     parent: 12
     order: '2300'
     type: Li
+    public: true
     frozen: false
     lot_tracking: true
     lft: 26
@@ -216,6 +231,7 @@
     parent: 11
     order: '2700'
     type: Li
+    public: true
     frozen: true
     lot_tracking: false
     lft: 29
@@ -230,6 +246,7 @@
     parent: 16
     order: '2700'
     type: Li
+    public: true
     frozen: false
     lot_tracking: false
     lft: 30
@@ -244,6 +261,7 @@
     parent: 1
     order: '3000'
     type: Eq
+    public: true
     frozen: true
     lot_tracking: false
     lft: 34
@@ -258,6 +276,7 @@
     parent: 18
     order: '3100'
     type: Eq
+    public: true
     frozen: false
     lot_tracking: false
     lft: 35
@@ -272,6 +291,7 @@
     parent: 18
     order: '3200'
     type: Eq
+    public: true
     frozen: false
     lot_tracking: false
     lft: 37
@@ -286,6 +306,7 @@
     parent: 18
     order: '3300'
     type: Eq
+    public: true
     frozen: false
     lot_tracking: false
     lft: 39
@@ -300,6 +321,7 @@
     parent: 18
     order: '3900'
     type: NE
+    public: true
     frozen: false
     lot_tracking: false
     lft: 41
@@ -314,6 +336,7 @@
     parent: null
     order: '4000'
     type: In
+    public: false
     frozen: true
     lot_tracking: false
     lft: 1
@@ -328,6 +351,7 @@
     parent: 23
     order: '4000'
     type: In
+    public: true
     frozen: false
     lot_tracking: false
     lft: 2
@@ -342,6 +366,7 @@
     parent: 23
     order: '5000'
     type: Ex
+    public: true
     frozen: false
     lot_tracking: false
     lft: 4
@@ -356,6 +381,7 @@
     parent: 23
     order: '6000'
     type: Ex
+    public: true
     frozen: false
     lot_tracking: false
     lft: 6
@@ -370,6 +396,7 @@
     parent: 23
     order: '7000'
     type: Ex
+    public: true
     frozen: false
     lot_tracking: false
     lft: 8
@@ -384,6 +411,7 @@
     parent: 23
     order: '8000'
     type: Ex
+    public: true
     frozen: false
     lot_tracking: false
     lft: 10
@@ -398,6 +426,7 @@
     parent: 23
     order: '9000'
     type: Ex
+    public: true
     frozen: false
     lot_tracking: false
     lft: 12

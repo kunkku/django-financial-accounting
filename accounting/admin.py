@@ -67,6 +67,7 @@ class AccountAdmin(ContextMixin, MPTTModelAdmin):
         'name',
         'code',
         'type',
+        'public',
         'frozen',
         'lot_tracking',
         Account.get_balance_display
