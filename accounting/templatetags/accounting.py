@@ -119,13 +119,15 @@ def account_chart(
             last = i == len(specs) - 1
 
             if post_totals:
-                child_rcols = (
-                    [
-                        [display.currency(balance) for balance in balances]
-                    ] if len(children) > 1 else []
-                ) + [
+                child_rcols = [
                     fy_rcols if last else empty_cols for fy_rcols in right_cols
                 ]
+                if children and (
+                    len(children) > 1 or children[0]['balances'] != balances
+                ):
+                    child_rcols.insert(
+                        0, [display.currency(balance) for balance in balances]
+                    )
             else:
                 child_rcols = right_cols[1:]
 
