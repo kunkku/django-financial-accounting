@@ -80,7 +80,7 @@ class AnnualReportView(AccountChartView):
                     fy, FiscalYear.by_date(fy.start - timedelta(days=1))
                 )
             except FiscalYear.DoesNotExist:
-                pass
+                context['fy'] = (fy,)
 
         accounts = Account.objects.filter(type__in=self.account_types)
         if not self.breakdown:
@@ -91,6 +91,7 @@ class AnnualReportView(AccountChartView):
         context['lots'] = self.breakdown
         context['post_totals'] = True
         context['signed'] = 'Ex' in self.account_types
+        context['title'] = self.title
         context['zero_rows'] = False
 
 class BalanceSheetView(AnnualReportView):

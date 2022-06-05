@@ -46,7 +46,8 @@ def account_chart(
     signed=False,
     zero_rows=True
 ):
-    fyears = tuple(fy) if isinstance(fy, Iterable) else (fy,)
+    multi_fy = isinstance(fy, Iterable)
+    fyears = tuple(fy) if multi_fy else (fy,)
 
     stack = [([],)]
     show = 0
@@ -100,7 +101,7 @@ def account_chart(
 
     empty_cols = ('',) * len(fyears)
 
-    def render(specs, level, right_cols):
+    def render_accounts(specs, level, right_cols):
         indent = mark_safe('<td class="indent"></td>' * level)
 
         left_span = max_show - len(right_cols) - 1
@@ -143,18 +144,32 @@ def account_chart(
                         ) for j, balance in zip(count(), balances)
                     )
                 ),
-                children=render(children, level + 1, child_rcols),
+                children=render_accounts(children, level + 1, child_rcols),
                 indent=indent,
                 span=max_show - level
             )
 
         return mark_safe(res)
 
+    def render_header(text):
+        return format_html(
+            '<th class="right"{span}>{text}</th>{pad}',
+            pad='' if post_totals or max_show == 1 else
+                format_html('<th colspan="{}"></th>', max_show - 1),
+            text=text,
+            span=format_html(' colspan="{}"', max_show) if post_totals else ''
+        )
+
     return format_html(
-        '<table>{}</table>',
-        render(
+        '<table>{header}<tbody>{body}</tbody></table>',
+        body=render_accounts(
             stack[0][0],
             0,
             () if post_totals else (empty_cols,) * (max_show - 1)
-        )
+        ),
+        header=format_html(
+            '<thead><tr>{indent}{labels}</tr></thead>',
+            indent=render_header(''),
+            labels=mark_safe(''.join((render_header(fy) for fy in fyears)))
+        ) if multi_fy else ''
     )
