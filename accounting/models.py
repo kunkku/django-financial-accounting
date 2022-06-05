@@ -185,6 +185,10 @@ class Account(MPTTModel):
             update(old_parent)
 
     @property
+    def title(self):
+        return ((self.code + ' ') if self.code else '') + self.name
+
+    @property
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
@@ -287,7 +291,7 @@ class Account(MPTTModel):
         order_insertion_by = ('order',)
 
     def __str__(self):
-        return ((self.code + ' ') if self.code else '') + self.name
+        return self.title
 
 
 class Lot(models.Model):
@@ -298,6 +302,11 @@ class Lot(models.Model):
 	FiscalYear, editable=False, on_delete=models.PROTECT
     )
     number = models.IntegerField(editable=False)
+    description = models.CharField(max_length=128, blank=True)
+
+    @property
+    def title(self):
+        return self.description or str(self)
 
     @property
     def sign(self):

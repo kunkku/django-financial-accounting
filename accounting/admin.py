@@ -82,7 +82,6 @@ admin.site.register(Account, AccountAdmin)
 class LotAdmin(ContextAdmin):
     model = Lot
     list_display = (Lot.__str__, 'account', Lot.get_balance_display)
-    change_form_template = 'accounting/transaction_list.html'
 
     def get_context(self, lot):
         return {

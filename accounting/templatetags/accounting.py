@@ -125,7 +125,7 @@ def account_chart(
 
             res += format_html(
                 '<tr>{indent}<td colspan="{span}">{account}</td>{balances}</tr>{children}',
-                account=account,
+                account=account.title,
                 balances='' if post_totals and children else mark_safe(
                     ''.join(
                         format_html(

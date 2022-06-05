@@ -1,0 +1,13 @@
+{# Copyright (c) 2015-2022 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+{% if lot.fiscal_year.closed %}
+<p>{{ lot.description }}</p>
+{% else %}
+{{ block.super }}
+{% endif %}
+{% include "accounting/includes/transaction_list.html" %}
+{% endblock %}
