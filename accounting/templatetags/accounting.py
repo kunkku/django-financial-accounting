@@ -129,13 +129,13 @@ def account_chart(
                 balances='' if post_totals and children else mark_safe(
                     ''.join(
                         format_html(
-                            '{left_col}<td class="currency">{balance}</td>{right_cols}',
+                            '{left_col}<td class="right">{balance}</td>{right_cols}',
                             balance=display.currency(balance),
                             left_col=left_col,
                             right_cols=mark_safe(
                                 ''.join(
                                     format_html(
-                                        '<td class="currency">{}</td>',
+                                        '<td class="right">{}</td>',
                                         fy_rcols[j] if last else ''
                                     ) for fy_rcols in right_cols
                                 )
