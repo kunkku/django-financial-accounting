@@ -49,7 +49,7 @@ def account_chart(
     multi_fy = isinstance(fy, Iterable)
     fyears = tuple(fy) if multi_fy else (fy,)
 
-    stack = [([],)]
+    stack = [{'children': []}]
     show = 0
     max_show = 1
     first = None
@@ -64,15 +64,15 @@ def account_chart(
         if zero_rows or any(balances):
             show = len(stack)
             max_show = max(max_show, show)
-        stack.append(([], account, balances))
+        stack.append({'account': account, 'balances': balances, 'children': []})
 
     def flush():
         nonlocal stack, show
         spec = stack.pop()
         if len(stack) == show:
-            stack[-1][0].append(spec)
+            stack[-1]['children'].append(spec)
             show -= 1
-        return spec[1]
+        return spec['account']
 
     for _, acct, next_acct in previous_current_next(accounts):
         if not first:
@@ -91,7 +91,7 @@ def account_chart(
                     ancs.remove(anc)
                     break
 
-        while stack[-1][1] not in ancs:
+        while stack[-1]['account'] not in ancs:
             acc = flush()
             if len(stack) == 1:
                 parent = acc.parent
@@ -111,8 +111,13 @@ def account_chart(
 
         res = ''
 
-        for i, (children, account, balances) in zip(count(), specs):
+        for i, spec in zip(count(), specs):
+            account = spec['account']
+            balances = spec['balances']
+            children = spec['children']
+
             last = i == len(specs) - 1
+
             if post_totals:
                 child_rcols = (
                     [
@@ -163,7 +168,7 @@ def account_chart(
     return format_html(
         '<table>{header}<tbody>{body}</tbody></table>',
         body=render_accounts(
-            stack[0][0],
+            stack[0]['children'],
             0,
             () if post_totals else (empty_cols,) * (max_show - 1)
         ),
