@@ -54,7 +54,7 @@ def account_chart(
     max_show = 1
     first = None
 
-    def append(account):
+    def append(account, total=False):
         nonlocal stack, show, max_show
         balances = [
             account.get_total_balance(
@@ -64,7 +64,14 @@ def account_chart(
         if zero_rows or any(balances):
             show = len(stack)
             max_show = max(max_show, show)
-        stack.append({'account': account, 'balances': balances, 'children': []})
+        stack.append(
+            {
+                'account': account,
+                'balances': balances,
+                'children': [],
+                'total': total
+            }
+        )
 
     def flush():
         nonlocal stack, show
@@ -97,7 +104,7 @@ def account_chart(
                 parent = acc.parent
                 if not parent or parent in ancs:
                     break
-                append(parent)
+                append(parent, True)
 
     empty_cols = ('',) * len(fyears)
 
@@ -132,7 +139,7 @@ def account_chart(
                 child_rcols = right_cols[1:]
 
             res += format_html(
-                '<tr>{indent}<td colspan="{span}">{account}</td>{balances}</tr>{children}',
+                '<tr{total}>{indent}<td colspan="{span}">{account}</td>{balances}</tr>{children}',
                 account=account.title,
                 balances='' if post_totals and children else mark_safe(
                     ''.join(
@@ -153,7 +160,8 @@ def account_chart(
                 ),
                 children=render_accounts(children, level + 1, child_rcols),
                 indent=indent,
-                span=max_show - level
+                span=max_show - level,
+                total=mark_safe(' class="total"') if spec['total'] else ''
             )
 
         return mark_safe(res)
