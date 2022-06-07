@@ -128,10 +128,10 @@ class Account(MPTTModel):
     code = models.CharField(max_length=8, blank=True)
     parent = TreeForeignKey(
         'self',
-	blank=True,
-	null=True,
-	on_delete=models.PROTECT,
-	related_name='children'
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='children'
     )
     order = models.CharField(max_length=8, blank=True, editable=False)
     type = models.CharField(
@@ -296,10 +296,10 @@ class Account(MPTTModel):
 
 class Lot(models.Model):
     account = models.ForeignKey(
-	Account, editable=False, on_delete=models.PROTECT
+        Account, editable=False, on_delete=models.PROTECT
     )
     fiscal_year = models.ForeignKey(
-	FiscalYear, editable=False, on_delete=models.PROTECT
+        FiscalYear, editable=False, on_delete=models.PROTECT
     )
     number = models.IntegerField(editable=False)
     description = models.CharField(max_length=128, blank=True)
@@ -366,17 +366,17 @@ class Journal(models.Model):
 class Transaction(models.Model):
     fiscal_year = models.ForeignKey(
         FiscalYear,
-	blank=True,
-	null=True,
-	editable=False,
-	on_delete=models.PROTECT
+        blank=True,
+        null=True,
+        editable=False,
+        on_delete=models.PROTECT
     )
     period = models.ForeignKey(
         FiscalPeriod,
-	blank=True,
-	null=True,
-	editable=False,
-	on_delete=models.PROTECT
+        blank=True,
+        null=True,
+        editable=False,
+        on_delete=models.PROTECT
     )
     journal = models.ForeignKey(Journal, on_delete=models.PROTECT)
     number = models.IntegerField(blank=True, null=True)

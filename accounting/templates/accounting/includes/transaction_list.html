@@ -9,14 +9,14 @@
       <th>Number</th>
       <th>Description</th>
       <th>
-	{% if not account %}
-	Account
-	{% endif %}
+        {% if not account %}
+        Account
+        {% endif %}
       </th>
       <th>
-	{% if not account or account.lot_tracking and not lot %}
-	Lot
-	{% endif %}
+        {% if not account or account.lot_tracking and not lot %}
+        Lot
+        {% endif %}
       </th>
       <th class="right">Debit</th>
       <th class="right">Credit</th>
@@ -38,14 +38,14 @@
       <td></td><td></td>
       <td>{{ item.description }}</td>
       <td>
-	{% if not account %}
-	{{ item.account }}
-	{% endif %}
+        {% if not account %}
+        {{ item.account }}
+        {% endif %}
       </td>
       <td>
-	{% if not account or account.lot_tracking and not lot %}
-	{{ item.lot|default_if_none:"" }}
-	{% endif %}
+        {% if not account or account.lot_tracking and not lot %}
+        {{ item.lot|default_if_none:"" }}
+        {% endif %}
       </td>
       <td class="right">{{ item.debit }}</td>
       <td class="right">{{ item.credit }}</td>
