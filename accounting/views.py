@@ -31,7 +31,7 @@ class ReportView(TemplateView):
             raise Http404
 
         res['fy'] = fy
-        res['title'] = '{} {}'.format(self.title, fy)
+        res['title'] = self.title.format(fy)
         self.update_context(res, kwargs)
         return res
 
@@ -42,7 +42,7 @@ class AccountView(ReportView):
         context['accounts'] = Account.objects.all()
 
 class AccountChartView(AccountView):
-    title = 'Chart of Accounts'
+    title = 'Chart of Accounts {}'
     template_name = 'accounting/account_chart.html'
 
     def update_context(self, context, args):
@@ -50,12 +50,12 @@ class AccountChartView(AccountView):
         context['zero_rows'] = True
 
 class GeneralLedgerView(AccountView):
-    title = 'General Ledger'
+    title = 'General Ledger {}'
     template_name = 'accounting/general_ledger.html'
 
 
 class JournalView(ReportView):
-    title = 'General Journal'
+    title = 'General Journal {}'
     template_name = 'accounting/journal.html'
 
     def update_context(self, context, args):
@@ -91,7 +91,6 @@ class AnnualReportView(AccountChartView):
         context['lots'] = self.breakdown
         context['post_totals'] = True
         context['signed'] = 'Ex' in self.account_types
-        context['title'] = self.title
         context['zero_rows'] = False
 
 class BalanceSheetView(AnnualReportView):
@@ -103,5 +102,5 @@ class IncomeStatementView(AnnualReportView):
     account_types = ('In', 'Ex')
 
 class BalanceSheetBreakdownView(BalanceSheetView):
-    title = 'Balance Sheet Breakdown'
+    title = 'Balance Sheet Breakdown {}'
     breakdown = True
