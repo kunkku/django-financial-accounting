@@ -13,7 +13,7 @@ from .models import *
 class ReportView(TemplateView):
 
     def get_context_data(self, **kwargs):
-        res = super(ReportView, self).get_context_data(**kwargs)
+        res = super().get_context_data(**kwargs)
         fy = kwargs['fy']
 
         try:
@@ -46,7 +46,7 @@ class AccountChartView(AccountView):
     template_name = 'accounting/account_chart.html'
 
     def update_context(self, context, args):
-        super(AccountChartView, self).update_context(context, args)
+        super().update_context(context, args)
         context['zero_rows'] = True
 
 class GeneralLedgerView(AccountView):

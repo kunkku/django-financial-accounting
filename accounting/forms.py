@@ -40,7 +40,7 @@ class TransactionItemForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(TransactionItemForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         targets = [('', '-' * 9)]
         for account in Account.objects.filter(frozen=False).all():

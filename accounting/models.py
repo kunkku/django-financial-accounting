@@ -172,7 +172,7 @@ class Account(MPTTModel):
         old_parent = self.pk and Account.objects.get(pk=self.pk).parent
         parent_changed = self.parent != old_parent
 
-        super(Account, self).save(**kwargs)
+        super().save(**kwargs)
 
         def update(account):
             if account:
