@@ -1,5 +1,5 @@
-{# Copyright (c) 2015-2022 Data King Ltd #}
+{# Copyright (c) 2015-2023 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% load accounting %}
-{% account_chart accounts fy|slice:"0:2" include_closing=1 post_totals=1 zero_rows=0 %}
+{% account_chart accounts fy|slice:"0:2" fy_template="{{ fy.end|date:'SHORT_DATE_FORMAT' }}" include_closing=1 post_totals=1 zero_rows=0 %}

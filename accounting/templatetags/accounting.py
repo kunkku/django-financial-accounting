@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2022 Data King Ltd
+# Copyright (c) 2015-2023 Data King Ltd
 # See LICENSE file for license details
 
 from django import template
@@ -44,6 +44,7 @@ def transactions(account, fy):
 def account_chart(
     accounts,
     fy,
+    fy_template=None,
     include_closing=False,
     lots=False,
     post_totals=False,
@@ -52,6 +53,9 @@ def account_chart(
 ):
     multi_fy = isinstance(fy, Iterable)
     fyears = tuple(fy) if multi_fy else (fy,)
+
+    if fy_template:
+        fy_template = template.Template(fy_template)
 
     stack = [{'children': []}]
     show = 0
@@ -189,6 +193,13 @@ def account_chart(
         header=format_html(
             '<thead><tr>{indent}{labels}</tr></thead>',
             indent=render_header(''),
-            labels=mark_safe(''.join((render_header(fy) for fy in fyears)))
+            labels=mark_safe(
+                ''.join(
+                    render_header(
+                        fy_template.render(template.Context({'fy': fy}))
+                        if fy_template else fy
+                    ) for fy in fyears
+                )
+            )
         ) if multi_fy else ''
     )
