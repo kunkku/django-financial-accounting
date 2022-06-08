@@ -49,10 +49,8 @@ class TransactionItemForm(forms.ModelForm):
                 for lot in account.lots:
                     targets.append(
                         (
-                            '{} {}'.format(account.pk, lot.pk),
-                            '{}: {} ({})'.format(
-                                account, lot, lot.get_balance_display()
-                            )
+                            f'{account.pk} {lot.pk}',
+                            f'{account}: {lot} ({lot.get_balance_display()})'
                         )
                     )
 

@@ -65,7 +65,7 @@ class FiscalYear(DateRange):
 
     def close(self):
         if self.closed:
-            raise ValidationError('Fiscal year {} already closed'.format(self))
+            raise ValidationError(f'Fiscal year {self} already closed')
 
         txn = None
         profit = 0
@@ -119,7 +119,7 @@ class FiscalPeriod(DateRange):
             )
 
     def __str__(self):
-        return '{}/{}'.format(self.start.month, self.start.year)
+        return f'{self.start.month}/{self.start.year}'
 
 
 
@@ -339,7 +339,7 @@ class Lot(models.Model):
         unique_together = ('account', 'fiscal_year', 'number')
 
     def __str__(self):
-        return '{}/{}'.format(self.fiscal_year, self.number)
+        return f'{self.fiscal_year}/{self.number}'
     __str__.short_description = 'lot'
 
 
@@ -404,7 +404,7 @@ class Transaction(models.Model):
 
     def commit(self):
         if self.state != 'D':
-            raise ValidationError('Transaction {} already closed'.format(self))
+            raise ValidationError(f'Transaction {self} already closed')
 
         if not self.items.all():
             raise ValidationError('Cannot commit an empty transaction')
@@ -418,7 +418,7 @@ class Transaction(models.Model):
         self.fiscal_year = self.period.fiscal_year
         if self.fiscal_year.closed:
             raise ValidationError(
-                'Fiscal year {} already closed'.format(self.fiscal_year)
+                f'Fiscal year {self.fiscal_year} already closed'
             )
 
         for item in self.items.all():
@@ -454,13 +454,8 @@ class Transaction(models.Model):
 
     def __str__(self):
         if self.state == 'C':
-            return '{}/{}{}'.format(
-                self.fiscal_year, self.journal, self.number
-            )
-        return '#{}{}'.format(
-            self.id,
-            ' ({})'.format(self.date) if self.date else ''
-        )
+            return f'{self.fiscal_year}/{self.journal}{self.number}'
+        return '#{}{}'.format(self.id, f' ({self.date})' if self.date else '')
     __str__.short_description = 'transaction'
 
 
