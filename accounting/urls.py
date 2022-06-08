@@ -9,6 +9,11 @@ app_name = 'accounting'
 
 urlpatterns = (
     path(
+        'financial-statement/<str:fy>',
+        FinancialStatementView.as_view(),
+        name='financial_statement'
+    ),
+    path(
         'balance-sheet/<str:fy>',
         BalanceSheetView.as_view(),
         name='balance_sheet'

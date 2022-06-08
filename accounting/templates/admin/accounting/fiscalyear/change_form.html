@@ -6,6 +6,9 @@
 {% block after_field_sets %}
 {% if fy %}
 <p>
+  <a href="{% url "accounting:financial_statement" fy=fy %}">View financial statement</a>
+</p>
+<p>
   <a href="{% url "accounting:balance_sheet" fy=fy %}">View balance sheet</a>
 </p>
 <p>

@@ -1,0 +1,15 @@
+{# Copyright (c) 2015-2022 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "accounting/report.html" %}
+
+{% block content %}
+<h2>Balance Sheet</h2>
+{% with accounts=balance_accounts %}
+{% include "accounting/includes/balance_sheet.html" %}
+{% endwith %}
+<h2>Income Statement</h2>
+{% with accounts=pl_accounts %}
+{% include "accounting/includes/income_statement.html" %}
+{% endwith %}
+{% endblock %}

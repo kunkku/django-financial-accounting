@@ -70,6 +70,16 @@ class AnnualReportView(AccountView):
         except FiscalYear.DoesNotExist:
             context['fy'] = (fy,)
 
+class FinancialStatementView(AnnualReportView):
+    title = 'Financial Statement {}'
+    template_name = 'accounting/financial_statement.html'
+
+    def update_context(self, context, args):
+        super().update_context(context, args)
+        for group in ('balance', 'pl'):
+            attr = f'{group}_accounts'
+            context[attr] = getattr(Account, attr).filter(public=True)
+
 class BalanceSheetView(AnnualReportView):
     title = 'Balance Sheet'
     template_name = 'accounting/balance_sheet.html'
