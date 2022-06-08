@@ -25,7 +25,7 @@
   <tbody>
     {% for txn in transactions %}
     <tr>
-      <td>{{ txn.date }}</td>
+      <td>{{ txn.date|date:"SHORT_DATE_FORMAT" }}</td>
       <td>{{ txn.journal }}{{ txn.number }}</td>
       <td colspan="3">{{ txn.description }}</td>
       <td></td>
