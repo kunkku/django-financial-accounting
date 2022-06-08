@@ -15,6 +15,10 @@ from .. import display
 register = template.Library()
 
 @register.filter
+def reverse(iterable):
+    return reversed(iterable)
+
+@register.filter
 def currency(amount):
     return display.currency(amount)
 
