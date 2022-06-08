@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2022 Data King Ltd
+# Copyright (c) 2015-2023 Data King Ltd
 # See LICENSE file for license details
 
 from django.core.exceptions import ValidationError
@@ -489,9 +489,11 @@ class TransactionItem(models.Model):
         res = items.aggregate(models.Sum('amount'))['amount__sum']        
         return res if res else 0
 
+    @property
     def debit(self):
         return display.currency(-self.amount) if self.amount < 0 else ''
 
+    @property
     def credit(self):
         return display.currency(self.amount) if self.amount > 0 else ''
 
