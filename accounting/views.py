@@ -11,7 +11,6 @@ from .models import *
 
 
 class ReportView(TemplateView):
-
     def get_context_data(self, **kwargs):
         res = super().get_context_data(**kwargs)
         fy = kwargs['fy']
@@ -37,9 +36,15 @@ class ReportView(TemplateView):
 
 
 class AccountView(ReportView):
+    accounts = Account.objects
 
     def update_context(self, context, args):
-        context['accounts'] = Account.objects.all()
+        context['accounts'] = self.accounts.all()
+
+class BalanceSheetBreakdownView(AccountView):
+    title = 'Balance Sheet Breakdown {}'
+    template_name = 'accounting/balance_sheet_breakdown.html'
+    accounts = Account.balance_accounts
 
 class AccountChartView(AccountView):
     title = 'Chart of Accounts {}'
@@ -52,6 +57,28 @@ class AccountChartView(AccountView):
 class GeneralLedgerView(AccountView):
     title = 'General Ledger {}'
     template_name = 'accounting/general_ledger.html'
+
+
+class AnnualReportView(AccountView):
+    def update_context(self, context, args):
+        super().update_context(context, args)
+        fy = context['fy']
+        try:
+            context['fy'] = (
+                fy, FiscalYear.by_date(fy.start - timedelta(days=1))
+            )
+        except FiscalYear.DoesNotExist:
+            context['fy'] = (fy,)
+
+class BalanceSheetView(AnnualReportView):
+    title = 'Balance Sheet'
+    template_name = 'accounting/balance_sheet.html'
+    accounts = Account.balance_accounts.filter(public=True)
+
+class IncomeStatementView(AnnualReportView):
+    title = 'Income Statement'
+    template_name = 'accounting/income_statement.html'
+    accounts = Account.pl_accounts.filter(public=True)
 
 
 class JournalView(ReportView):
@@ -67,40 +94,3 @@ class JournalView(ReportView):
             txn_filter['journal'] = journal
 
         context['transactions'] = Transaction.objects.filter(**txn_filter)
-
-
-class AnnualReportView(AccountChartView):
-    breakdown = False
-
-    def update_context(self, context, args):
-        if not self.breakdown:
-            fy = context['fy']
-            try:
-                context['fy'] = (
-                    fy, FiscalYear.by_date(fy.start - timedelta(days=1))
-                )
-            except FiscalYear.DoesNotExist:
-                context['fy'] = (fy,)
-
-        accounts = Account.objects.filter(type__in=self.account_types)
-        if not self.breakdown:
-            accounts = accounts.filter(public=True)
-
-        context['accounts'] = accounts
-        context['include_closing'] = 'NE' in self.account_types
-        context['lots'] = self.breakdown
-        context['post_totals'] = True
-        context['signed'] = 'Ex' in self.account_types
-        context['zero_rows'] = False
-
-class BalanceSheetView(AnnualReportView):
-    title = 'Balance Sheet'
-    account_types = ('As', 'Eq', 'NE', 'Li')
-
-class IncomeStatementView(AnnualReportView):
-    title = 'Income Statement'
-    account_types = ('In', 'Ex')
-
-class BalanceSheetBreakdownView(BalanceSheetView):
-    title = 'Balance Sheet Breakdown {}'
-    breakdown = True

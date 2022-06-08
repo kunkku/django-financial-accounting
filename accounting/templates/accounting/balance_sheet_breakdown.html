@@ -5,5 +5,5 @@
 {% load accounting %}
 
 {% block content %}
-{% account_chart accounts fy %}
+{% account_chart accounts fy include_closing=1 lots=1 post_totals=1 zero_rows=0 %}
 {% endblock %}

@@ -11,7 +11,7 @@ import functools
 import operator
 import time
 
-from . import display
+from . import display, managers
 
 
 class DateRange(models.Model):
@@ -148,6 +148,10 @@ class Account(MPTTModel):
     public = models.BooleanField()
     frozen = models.BooleanField()
     lot_tracking = models.BooleanField()
+
+    objects = managers.AccountManager()
+    balance_accounts = managers.AccountManager('As', 'Eq', 'NE', 'Li')
+    pl_accounts = managers.AccountManager('In', 'Ex')
 
     def clean(self):
         try:

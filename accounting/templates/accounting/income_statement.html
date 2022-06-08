@@ -2,8 +2,7 @@
 {# See LICENSE file for license details #}
 
 {% extends "accounting/report.html" %}
-{% load accounting %}
 
 {% block content %}
-{% account_chart accounts fy %}
+{% include "accounting/includes/income_statement.html" %}
 {% endblock %}
