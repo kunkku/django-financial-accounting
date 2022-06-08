@@ -2,4 +2,4 @@
 {# See LICENSE file for license details #}
 
 {% load accounting %}
-{% account_chart accounts fy post_totals=1 signed=1 zero_rows=0 %}
+{% account_chart accounts fy|slice:"0:2" post_totals=1 signed=1 zero_rows=0 %}

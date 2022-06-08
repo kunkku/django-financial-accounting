@@ -5,7 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 
-from datetime import date, timedelta
+from datetime import date
 
 from .models import *
 
@@ -62,13 +62,9 @@ class GeneralLedgerView(AccountView):
 class AnnualReportView(AccountView):
     def update_context(self, context, args):
         super().update_context(context, args)
-        fy = context['fy']
-        try:
-            context['fy'] = (
-                fy, FiscalYear.by_date(fy.start - timedelta(days=1))
-            )
-        except FiscalYear.DoesNotExist:
-            context['fy'] = (fy,)
+        context['fy'] = FiscalYear.objects.filter(
+            end__lte=context['fy'].end
+        ).order_by('-end')
 
 class FinancialStatementView(AnnualReportView):
     title = 'Financial Statement {}'
