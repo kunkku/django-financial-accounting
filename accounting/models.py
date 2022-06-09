@@ -202,13 +202,11 @@ class Account(MPTTModel):
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
-    def get_balance(self, date=None, include_closing=False, lot=None):
+    def get_balance(self, date=None, lot=None):
         items = self.items
         if lot:
             items = items.filter(lot=lot)
-        return TransactionItem.get_total_balance(
-            items, date=date, include_closing=include_closing
-        )
+        return TransactionItem.get_total_balance(items, date)
 
     def get_total_balance(self, **kwargs):
         balance = self.get_balance(**kwargs)
@@ -498,17 +496,15 @@ class TransactionItem(models.Model):
         return res if res else 0
 
     @staticmethod
-    def get_total_balance(items, date=None, include_closing=False):
+    def get_total_balance(items, date=None):
         items = items.filter(transaction__state='C')
-
         if date:
-            date_filter = models.Q(transaction__date=date)
-            if not include_closing:
-                date_filter &= models.Q(transaction__closing=False)
             items = items.filter(
-                models.Q(transaction__date__lt=date) | date_filter
+                models.Q(transaction__date__lt=date) | (
+                    models.Q(transaction__date=date) &
+                    models.Q(transaction__closing=False)
+                )
             )
-
         return TransactionItem.sum_amount(items)
 
     @property

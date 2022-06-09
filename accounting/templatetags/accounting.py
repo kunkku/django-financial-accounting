@@ -27,9 +27,8 @@ def adjusted_balance(account, **kwargs):
 
 @register.filter
 def opening_balance(account, fy):
-    return adjusted_balance(
-        account, date=fy.start - timedelta(days=1), include_closing=True
-    )
+    return 0 if account.is_pl_account else \
+        adjusted_balance(account, date=fy.start - timedelta(days=1))
 
 @register.filter
 def closing_balance(account, fy):
@@ -45,7 +44,6 @@ def account_chart(
     accounts,
     fy,
     fy_template=None,
-    include_closing=False,
     lots=False,
     post_totals=False,
     signed=False,
@@ -65,9 +63,8 @@ def account_chart(
     def append(account, total=False):
         nonlocal stack, show, max_show
         balances = [
-            account.get_total_balance(
-                date=fy.end, include_closing=include_closing
-            ) * (1 if signed else account.sign) for fy in fyears
+            account.get_total_balance(date=fy.end) *
+            (1 if signed else account.sign) for fy in fyears
         ]
         if zero_rows or any(balances):
             show = len(stack)
