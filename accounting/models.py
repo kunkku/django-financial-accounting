@@ -211,13 +211,21 @@ class Account(MPTTModel):
         )
 
     def get_total_balance(self, **kwargs):
+        balance = self.get_balance(**kwargs)
+
+        if self.type == 'NE':
+            balance += TransactionItem.get_total_balance(
+                TransactionItem.objects.filter(account__type__in=self.TYPES_PL),
+                **kwargs
+            )
+
         return functools.reduce(
             operator.add,
             (
-                account.get_total_balance(**kwargs) \
-                    for account in self.children.all()
+                account.get_total_balance(**kwargs)
+                for account in self.children.all()
             ),
-            self.get_balance(**kwargs)
+            balance
         )
 
     def get_balance_display(self, **kwargs):
