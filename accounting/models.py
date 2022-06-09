@@ -197,18 +197,12 @@ class Account(MPTTModel):
         return -1 if self.type in ('As', 'Ex') else 1
 
     def get_balance(self, date=None, include_closing=False, lot=None):
-        txn_filter = models.Q(transaction__state='C')
-
-        if date:
-            date_filter = models.Q(transaction__date=date)
-            if not include_closing:
-                date_filter &= models.Q(transaction__closing=False)
-            txn_filter &= models.Q(transaction__date__lt=date) | date_filter
-
+        items = self.items
         if lot:
-            txn_filter &= models.Q(lot=lot)
-
-        return TransactionItem.sum_amount(self.items.filter(txn_filter))
+            items = items.filter(lot=lot)
+        return TransactionItem.get_total_balance(
+            items, date=date, include_closing=include_closing
+        )
 
     def get_total_balance(self, **kwargs):
         return functools.reduce(
@@ -488,6 +482,20 @@ class TransactionItem(models.Model):
     def sum_amount(items):
         res = items.aggregate(models.Sum('amount'))['amount__sum']        
         return res if res else 0
+
+    @staticmethod
+    def get_total_balance(items, date=None, include_closing=False):
+        items = items.filter(transaction__state='C')
+
+        if date:
+            date_filter = models.Q(transaction__date=date)
+            if not include_closing:
+                date_filter &= models.Q(transaction__closing=False)
+            items = items.filter(
+                models.Q(transaction__date__lt=date) | date_filter
+            )
+
+        return TransactionItem.sum_amount(items)
 
     @property
     def debit(self):
