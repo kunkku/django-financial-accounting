@@ -2,7 +2,7 @@
 
 This project is a double-entry bookkeeping application for
 [Django](https://www.djangoproject.com/). It has been tested with Django
-release 2.0.
+release 4.0.
 
 In order to use this application in your Django project, you need to do the
 following:
@@ -20,7 +20,7 @@ following:
 4. Include `accounting.urls` in the `urlpatterns` list in your project's
    `urls.py`, for example as follows:
 
-   `path('accounting/', include('accounting.urls'))`
+    `path('accounting/', include('accounting.urls'))`
 
 5. Run `./manage.py migrate` to update the database schema.
 
@@ -32,7 +32,7 @@ following:
     * using the Django admin application, or
     * extracting `sample-fixtures.yaml` from the package downloaded in step 2,
      installing [PyYAML](https://pypi.org/project/PyYAML/), and running
-     `./manage.py loaddata sample-fixtures.yaml`.
+     `./manage.py loaddata sample-fixtures.yaml` in your project directory.
 
 After these steps, you are ready to start entering transactions to the ledger.
 This can be done from the admin application or programmatically, e.g. as
@@ -48,3 +48,14 @@ follows:
     txn.items.create(account=Account.objects.get(code='1100'), amount=-10000)
     txn.items.create(account=Account.objects.get(code='3100'), amount=10000)
     txn.commit()
+
+## Example Project
+
+This repository contains an example project in the `example` directory, which
+demonstrates how to
+
+* set up `settings.py` and `urls.py`, and
+* customize the financial statement (see the `templates` subdirectory).
+
+You may experiment with the example project using the `manage.py` script
+located in the root directory.
