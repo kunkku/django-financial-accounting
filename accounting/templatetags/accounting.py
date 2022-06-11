@@ -130,21 +130,8 @@ def account_chart(
 
             last = i == len(specs) - 1
 
-            if post_totals:
-                child_rcols = [
-                    fy_rcols if last else empty_cols for fy_rcols in right_cols
-                ]
-                if children and (
-                    len(children) > 1 or children[0]['balances'] != balances
-                ):
-                    child_rcols.insert(
-                        0, [display.currency(balance) for balance in balances]
-                    )
-            else:
-                child_rcols = right_cols[1:]
-
             res += format_html(
-                '<tr{total}>{indent}<td colspan="{span}">{account}</td>{balances}</tr>{children}',
+                '<tr{total}>{indent}<td colspan="{span}">{account}</td>{balances}</tr>',
                 account=account.title,
                 balances='' if post_totals and children else mark_safe(
                     ''.join(
@@ -163,11 +150,25 @@ def account_chart(
                         ) for j, balance in zip(count(), balances)
                     )
                 ),
-                children=render_accounts(children, level + 1, child_rcols),
                 indent=indent,
                 span=max_show - level,
                 total=mark_safe(' class="total"') if spec['total'] else ''
             )
+
+            if children:
+                if post_totals:
+                    child_rcols = [
+                        fy_rcols if last else empty_cols
+                        for fy_rcols in right_cols
+                    ]
+                    if len(children) > 1 or children[0]['balances'] != balances:
+                        child_rcols.insert(
+                            0,
+                            [display.currency(balance) for balance in balances]
+                        )
+                else:
+                    child_rcols = right_cols[1:]
+                res += render_accounts(children, level + 1, child_rcols)
 
         return mark_safe(res)
 
