@@ -1,12 +1,14 @@
 # Copyright (c) 2015-2023 Data King Ltd
 # See LICENSE file for license details
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from mptt.models import MPTTModel, TreeForeignKey
 
 import collections
 import datetime
+from decimal import Decimal as D
 import functools
 import operator
 import time
@@ -246,7 +248,8 @@ class Account(MPTTModel):
                 r['lot'] for r in self.items.filter(
                     transaction__state='C', lot__isnull=False
                 ).values('lot').annotate(models.Sum('amount'))
-                if not active_only or r['amount__sum']
+                if not active_only or
+                TransactionItem.correct_sum(r['amount__sum'])
             ]
         ).all()
 
@@ -280,7 +283,9 @@ class Account(MPTTModel):
                 models.Sum('transaction__item__amount')
             ):
                 totals[period][key] = abs(
-                    period.transaction__item__amount__sum
+                    TransactionItem.correct_sum(
+                        period.transaction__item__amount__sum
+                    )
                 )
 
         for key, comparison in keys.items():
@@ -491,8 +496,24 @@ class TransactionItem(models.Model):
     description = models.CharField(max_length=64, blank=True)
 
     @staticmethod
+    def correct_sum(amount):
+        if not amount:
+            return amount
+
+        res = amount.quantize(D('0.01'))
+
+        if settings.DATABASES[TransactionItem.objects.db]['ENGINE'] != \
+            'django.db.backends.sqlite3':
+
+            assert(res == amount)
+
+        return res
+
+    @staticmethod
     def sum_amount(items):
-        res = items.aggregate(models.Sum('amount'))['amount__sum']        
+        res = TransactionItem.correct_sum(
+            items.aggregate(models.Sum('amount'))['amount__sum']
+        )
         return res if res else 0
 
     @staticmethod
