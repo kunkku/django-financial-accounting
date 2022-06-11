@@ -59,6 +59,7 @@ def account_chart(
     show = 0
     max_show = 1
     first = None
+    top_level_totals = post_totals
 
     def append(account, total=False):
         nonlocal stack, show, max_show
@@ -110,11 +111,26 @@ def account_chart(
                 if not parent or parent in ancs:
                     break
                 append(parent, True)
+                top_level_totals = False
 
     empty_cols = ('',) * len(fyears)
 
+    if max_show and top_level_totals:
+        max_show -= 1
+
     def render_accounts(specs, level, right_cols):
-        indent = mark_safe('<td class="indent"></td>' * level)
+        vlevel = max(0, level)
+        indent = mark_safe('<td class="indent"></td>' * vlevel)
+
+        def render_row(label, columns, cls):
+            return format_html(
+                '<tr{cls}>{indent}<td colspan="{span}">{label}</td>{columns}</tr>',
+                cls=format_html(' class="{}"', cls) if cls else '',
+                columns=columns,
+                indent=indent,
+                label=label,
+                span=max_show - vlevel
+            )
 
         left_span = max_show - len(right_cols) - 1
         left_col = mark_safe(
@@ -130,33 +146,41 @@ def account_chart(
 
             last = i == len(specs) - 1
 
-            res += format_html(
-                '<tr{total}>{indent}<td colspan="{span}">{account}</td>{balances}</tr>',
-                account=account.title,
-                balances='' if post_totals and children else mark_safe(
-                    ''.join(
-                        format_html(
-                            '{left_col}<td class="right">{balance}</td>{right_cols}',
-                            balance=display.currency(balance),
-                            left_col=left_col,
-                            right_cols=mark_safe(
-                                ''.join(
-                                    format_html(
-                                        '<td class="right">{}</td>',
-                                        fy_rcols[j] if last else ''
-                                    ) for fy_rcols in right_cols
-                                )
+            columns = mark_safe(
+                ''.join(
+                    format_html(
+                        '{left_col}<td class="right">{balance}</td>{right_cols}',
+                        balance=display.currency(balance),
+                        left_col=left_col,
+                        right_cols=mark_safe(
+                            ''.join(
+                                format_html(
+                                    '<td class="right">{}</td>',
+                                    fy_rcols[j] if last else ''
+                                ) for fy_rcols in right_cols
                             )
-                        ) for j, balance in zip(count(), balances)
-                    )
-                ),
-                indent=indent,
-                span=max_show - level,
-                total=mark_safe(' class="total"') if spec['total'] else ''
+                        )
+                    ) for j, balance in zip(count(), balances)
+                )
+            )
+
+            if spec['total']:
+                cls = 'total'
+            else:
+                cls = 'top' if level == -1 else None
+
+            res += render_row(
+                account.title,
+                '' if post_totals and children else columns,
+                cls
             )
 
             if children:
-                if post_totals:
+                if not post_totals:
+                    child_rcols = right_cols[1:]
+                elif level == -1:
+                    child_rcols = ()
+                else:
                     child_rcols = [
                         fy_rcols if last else empty_cols
                         for fy_rcols in right_cols
@@ -166,9 +190,10 @@ def account_chart(
                             0,
                             [display.currency(balance) for balance in balances]
                         )
-                else:
-                    child_rcols = right_cols[1:]
                 res += render_accounts(children, level + 1, child_rcols)
+
+            if level == -1:
+                res += render_row('Total', columns, 'total')
 
         return mark_safe(res)
 
@@ -185,7 +210,7 @@ def account_chart(
         '<table>{header}<tbody>{body}</tbody></table>',
         body=render_accounts(
             stack[0]['children'],
-            0,
+            -1 if top_level_totals else 0,
             () if post_totals else (empty_cols,) * (max_show - 1)
         ),
         header=format_html(
