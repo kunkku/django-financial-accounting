@@ -71,7 +71,7 @@ class FiscalYear(DateRange):
         profit = 0
 
         for account in Account.objects.all():
-            if account.type not in ('In', 'Ex'):
+            if not account.is_pl_account:
                 continue
             balance = account.get_balance(self.end)
             if not balance:
@@ -149,9 +149,11 @@ class Account(MPTTModel):
     frozen = models.BooleanField()
     lot_tracking = models.BooleanField()
 
+    TYPES_PL = ('In', 'Ex')
+
     objects = managers.AccountManager()
     balance_accounts = managers.AccountManager('As', 'Eq', 'NE', 'Li')
-    pl_accounts = managers.AccountManager('In', 'Ex')
+    pl_accounts = managers.AccountManager(*TYPES_PL)
 
     def clean(self):
         try:
@@ -187,6 +189,10 @@ class Account(MPTTModel):
 
         if parent_changed:
             update(old_parent)
+
+    @property
+    def is_pl_account(self):
+        return self.type in self.TYPES_PL
 
     @property
     def title(self):
