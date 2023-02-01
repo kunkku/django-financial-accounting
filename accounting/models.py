@@ -165,6 +165,9 @@ class Account(MPTTModel):
             pass
 
     def save(self, **kwargs):
+        if self.is_pl_account:
+            self.lot_tracking = False
+
         if self.code:
             order = self.code
         else:
