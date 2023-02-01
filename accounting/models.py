@@ -168,6 +168,38 @@ class Account(MPTTModel):
         if self.is_pl_account:
             self.lot_tracking = False
 
+        old_parent = None
+        if self.pk:
+            old_obj = Account.objects.get(pk=self.pk)
+            old_parent = old_obj.parent
+
+            if self.lot_tracking and not old_obj.lot_tracking:
+                balance = self.get_balance()
+                if balance:
+                    fyears = FiscalYear.objects.filter(closed=False)
+                    if fyears.exists():
+                        fy = fyears.order_by('start')[0]
+                        date = fy.transaction_set.filter(state='C').aggregate(
+                            models.Max('date')
+                        )['date__max']
+                    else:
+                        date = FiscalYear.objects.order_by('-end')[0].end + \
+                            datetime.timedelta(days=1)
+                        fy = FiscalYear.by_date(date)
+
+                    txn = Transaction.objects.create(
+                        journal=Journal.get_closing(),
+                        date=date,
+                        description='Initial lot allocation'
+                    )
+                    txn.items.create(account=self, amount=-balance)
+                    txn.items.create(
+                        account=self,
+                        lot=Lot.objects.create(account=self, fiscal_year=fy),
+                        amount=balance
+                    )
+                    txn.commit()
+
         if self.code:
             order = self.code
         else:
@@ -180,14 +212,13 @@ class Account(MPTTModel):
         if order_changed:
             self.order = order
 
-        old_parent = self.pk and Account.objects.get(pk=self.pk).parent
-        parent_changed = self.parent != old_parent
-
         super().save(**kwargs)
 
         def update(account):
             if account:
                 Account.objects.get(pk=account.pk).save()
+
+        parent_changed = self.parent != old_parent
 
         if order_changed or parent_changed:
             update(self.parent)
