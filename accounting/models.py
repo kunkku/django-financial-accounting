@@ -80,7 +80,7 @@ class FiscalYear(DateRange):
                 continue
             if not txn:
                 txn = Transaction.objects.create(
-                    journal=Journal.objects.get(closing=True),
+                    journal=Journal.get_closing(),
                     date=self.end,
                     description='Net earnings during fiscal year ' + str(self),
                     closing=True
@@ -371,6 +371,10 @@ class Journal(models.Model):
     code = models.CharField(max_length=8)
     description = models.CharField(max_length=64, blank=True, null=True)
     closing = models.BooleanField(default=False)
+
+    @staticmethod
+    def get_closing():
+        return Journal.objects.get(closing=True)
 
     def issue_number(self, txn):
         return (
