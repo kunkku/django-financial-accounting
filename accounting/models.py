@@ -334,6 +334,15 @@ class Lot(models.Model):
     def balance(self):
         return self.get_balance()
 
+    def save(self, **kwargs):
+        if not self.number:
+            self.number = (
+                Lot.objects.filter(
+                    account=self.account, fiscal_year=self.fiscal_year
+                ).aggregate(models.Max('number'))['number__max'] or 0
+            ) + 1
+        super().save(**kwargs)
+
     def get_balance(self, **kwargs):
         return self.account.get_balance(lot=self, **kwargs)
 
@@ -437,15 +446,9 @@ class Transaction(models.Model):
 
         for item in self.items.all():
             if item.account.lot_tracking and not item.lot:
-                params = {
-                    'fiscal_year': self.fiscal_year, 'account': item.account
-                }
-                params['number'] = (
-                    Lot.objects.filter(**params).aggregate(
-                        models.Max('number')
-                    )['number__max'] or 0
-                ) + 1
-                item.lot = Lot.objects.create(**params)
+                item.lot = Lot.objects.create(
+                    account=item.account, fiscal_year=self.fiscal_year
+                )
             item.clean()
             item.save()
 
