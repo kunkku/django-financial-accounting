@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: django-financial-accounting\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-27 23:42+0000\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: accounting/models.py:92
+msgid "Net earnings during fiscal year {}"
+msgstr "Tilikauden {} tulos"
+
+#: accounting/models.py:202
+msgid "Initial lot allocation"
+msgstr "Ensimmäisen erän muodostaminen"
+
+#: accounting/templates/accounting/financial_statement.html:10
+#: accounting/views.py:96
+msgid "Balance Sheet"
+msgstr "Tase"
+
+#: accounting/templates/accounting/financial_statement.html:17
+#: accounting/views.py:101
+msgid "Income Statement"
+msgstr "Tuloslaskelma"
+
+#: accounting/templates/accounting/financial_statement.html:24
+#: accounting/views.py:50
+msgid "Statement of Changes in Equity"
+msgstr "Laskelma oman pääoman muutoksista"
+
+#: accounting/templates/accounting/general_ledger.html:17
+#: accounting/templatetags/accounting.py:261
+#, python-format
+msgid "Opening balance on %(date)s"
+msgstr "Alkusaldo %(date)s"
+
+#: accounting/templates/accounting/general_ledger.html:29
+#: accounting/templatetags/accounting.py:271
+#, python-format
+msgid "Closing balance on %(date)s"
+msgstr "Loppusaldo %(date)s"
+
+#: accounting/templates/accounting/includes/transaction_list.html:10
+msgid "Date"
+msgstr "Päivämäärä"
+
+#: accounting/templates/accounting/includes/transaction_list.html:11
+msgid "Number"
+msgstr "Numero"
+
+#: accounting/templates/accounting/includes/transaction_list.html:12
+msgid "Description"
+msgstr "Selite"
+
+#: accounting/templates/accounting/includes/transaction_list.html:15
+msgid "Account"
+msgstr "Tili"
+
+#: accounting/templates/accounting/includes/transaction_list.html:20
+msgid "Lot"
+msgstr "Erä"
+
+#: accounting/templates/accounting/includes/transaction_list.html:23
+msgid "Debit"
+msgstr "Debet"
+
+#: accounting/templates/accounting/includes/transaction_list.html:24
+msgid "Credit"
+msgstr "Kredit"
+
+#: accounting/templates/accounting/transaction_report.html:8
+#, python-format
+msgid "From %(start)s to %(end)s"
+msgstr "%(start)s – %(end)s"
+
+#: accounting/templatetags/accounting.py:205
+msgid "Total"
+msgstr "Yhteensä"
+
+#: accounting/templatetags/accounting.py:268
+msgid "Net earnings"
+msgstr "Tilikauden tulos"
+
+#: accounting/views.py:55
+msgid "Balance Sheet Breakdown"
+msgstr "Tase-erittelyt"
+
+#: accounting/views.py:60
+msgid "Chart of Accounts"
+msgstr "Tilikartta"
+
+#: accounting/views.py:68
+msgid "General Ledger"
+msgstr "Pääkirja"
+
+#: accounting/views.py:80
+msgid "Financial Statement"
+msgstr "Tilinpäätös"
+
+#: accounting/views.py:107
+msgid "General Journal"
+msgstr "Päiväkirja"

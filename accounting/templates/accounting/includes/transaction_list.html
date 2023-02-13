@@ -1,25 +1,27 @@
-{# Copyright (c) 2015-2022 Data King Ltd #}
+{# Copyright (c) 2015-2023 Data King Ltd #}
 {# See LICENSE file for license details #}
+
+{% load i18n %}
 
 {% if transactions %}
 <table>
   <thead>
     <tr>
-      <th>Date</th>
-      <th>Number</th>
-      <th>Description</th>
+      <th>{% trans "Date" %}</th>
+      <th>{% trans "Number" %}</th>
+      <th>{% trans "Description" %}</th>
       <th>
         {% if not account %}
-        Account
+        {% trans "Account" %}
         {% endif %}
       </th>
       <th>
         {% if not account or account.lot_tracking and not lot %}
-        Lot
+        {% trans "Lot" %}
         {% endif %}
       </th>
-      <th class="right">Debit</th>
-      <th class="right">Credit</th>
+      <th class="right">{% trans "Debit" %}</th>
+      <th class="right">{% trans "Credit" %}</th>
     </tr>
   </thead>
   <tbody>

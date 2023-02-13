@@ -1,8 +1,9 @@
-{# Copyright (c) 2015-2022 Data King Ltd #}
+{# Copyright (c) 2015-2023 Data King Ltd #}
 {# See LICENSE file for license details #}
 
 {% extends "accounting/transaction_report.html" %}
 {% load accounting %}
+{% load i18n %}
 
 {% block content %}
 
@@ -12,7 +13,10 @@
 <h2>{{ account }}</h2>
 
 {% if ob %}
-<p>Opening balance on {{ fy.start }}: {{ ob|currency }}</p>
+<p>
+  {% blocktrans with date=fy.start %}Opening balance on {{ date }}{% endblocktrans %}:
+  {{ ob|currency }}
+</p>
 {% endif %}
 
 {% with account=account transactions=txns %}
@@ -21,7 +25,10 @@
 
 {% with cb=account|closing_balance:fy %}
 {% if cb %}
-<p>Closing balance on {{ fy.end }}: {{ cb|currency }}</p>
+<p>
+  {% blocktrans with date=fy.end %}Closing balance on {{ date }}{% endblocktrans %}:
+  {{ cb|currency }}
+</p>
 {% endif %}
 {% endwith %}
 

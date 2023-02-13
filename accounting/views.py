@@ -1,10 +1,11 @@
-# Copyright (c) 2015-2022 Data King Ltd
+# Copyright (c) 2015-2023 Data King Ltd
 # See LICENSE file for license details
 
 from django.conf import settings
 from django.db.models import Max, Min
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from django.views.generic import TemplateView
 
 from datetime import date
@@ -46,17 +47,17 @@ class AccountView(ReportView):
         context['accounts'] = self.accounts.all()
 
 class EquityChangeStatementView(AccountView):
-    title = 'Statement of Changes in Equity'
+    title = _('Statement of Changes in Equity')
     template_name = 'accounting/equity_change_statement.html'
     accounts = Account.equity_accounts.filter(public=True)
 
 class BalanceSheetBreakdownView(AccountView):
-    title = 'Balance Sheet Breakdown'
+    title = _('Balance Sheet Breakdown')
     template_name = 'accounting/balance_sheet_breakdown.html'
     accounts = Account.balance_accounts
 
 class AccountChartView(AccountView):
-    title = 'Chart of Accounts'
+    title = _('Chart of Accounts')
     template_name = 'accounting/account_chart.html'
 
     def update_context(self, context, args):
@@ -64,7 +65,7 @@ class AccountChartView(AccountView):
         context['zero_rows'] = True
 
 class GeneralLedgerView(AccountView):
-    title = 'General Ledger'
+    title = _('General Ledger')
     template_name = 'accounting/general_ledger.html'
 
 
@@ -76,7 +77,7 @@ class AnnualReportView(AccountView):
         ).order_by('-end')
 
 class FinancialStatementView(AnnualReportView):
-    title = 'Financial Statement'
+    title = _('Financial Statement')
     template_name = 'accounting/financial_statement.html'
 
     def update_context(self, context, args):
@@ -92,18 +93,18 @@ class FinancialStatementView(AnnualReportView):
 
 
 class BalanceSheetView(AnnualReportView):
-    title = 'Balance Sheet'
+    title = _('Balance Sheet')
     template_name = 'accounting/balance_sheet.html'
     accounts = Account.balance_accounts.filter(public=True)
 
 class IncomeStatementView(AnnualReportView):
-    title = 'Income Statement'
+    title = _('Income Statement')
     template_name = 'accounting/income_statement.html'
     accounts = Account.pl_accounts.filter(public=True)
 
 
 class JournalView(ReportView):
-    title = 'General Journal'
+    title = _('General Journal')
     template_name = 'accounting/journal.html'
 
     def update_context(self, context, args):

@@ -4,6 +4,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 import collections
@@ -87,7 +88,9 @@ class FiscalYear(DateRange):
                 txn = Transaction.objects.create(
                     journal=Journal.get_closing(),
                     date=self.end,
-                    description='Net earnings during fiscal year ' + str(self),
+                    description=_(
+                        'Net earnings during fiscal year {}'
+                    ).format(self),
                     closing=True
                 )
             txn.items.create(account=account, amount=-balance)
@@ -196,7 +199,7 @@ class Account(MPTTModel):
                     txn = Transaction.objects.create(
                         journal=Journal.get_closing(),
                         date=date,
-                        description='Initial lot allocation'
+                        description=_('Initial lot allocation')
                     )
                     txn.items.create(account=self, amount=-balance)
                     txn.items.create(

@@ -2,7 +2,9 @@
 # See LICENSE file for license details
 
 from django import template
+from django.utils.formats import date_format
 from django.utils.html import format_html, mark_safe
+from django.utils.translation import gettext as _
 
 from mptt.utils import previous_current_next
 
@@ -94,7 +96,7 @@ def account_chart(
             show -= 1
         return spec['account']
 
-    for _, acct, next_acct in previous_current_next(accounts):
+    for __, acct, next_acct in previous_current_next(accounts):
         if not first:
             first = acct
 
@@ -200,7 +202,7 @@ def account_chart(
                 res += render_accounts(children, level + 1, child_rcols)
 
             if level == -1:
-                res += render_row('Total', columns, 'total')
+                res += render_row(_('Total'), columns, 'total')
 
         return mark_safe(res)
 
@@ -238,6 +240,9 @@ def account_change_table(fy, accounts):
     header = [''] + [acct.name for acct in accounts]
     rows = []
 
+    def render_dated_label(fmt, date):
+        return fmt % {'date': date_format(date, 'SHORT_DATE_FORMAT')}
+
     def render_balance(balance):
         return display.currency(balance) if balance else ''
 
@@ -253,17 +258,17 @@ def account_change_table(fy, accounts):
             append_row(description, balances)
 
     append_row(
-        f'Opening balance on {fy.start}',
+        render_dated_label(_('Opening balance on %(date)s'), fy.start),
         [opening_balance(acct, fy, children=True) for acct in accounts]
     )
 
     for txn in fy.transactions.filter(closing=False):
         append_txn_row(txn, txn.description)
 
-    append_txn_row('closing', 'Net earnings')
+    append_txn_row('closing', _('Net earnings'))
 
     append_row(
-        f'Closing balance on {fy.end}',
+        render_dated_label(_('Closing balance on %(date)s'), fy.end),
         [closing_balance(acct, fy, children=True) for acct in accounts]
     )
 
