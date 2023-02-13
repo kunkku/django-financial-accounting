@@ -75,7 +75,7 @@ class FiscalYear(DateRange):
         for account in Account.objects.all():
             if not account.is_pl_account:
                 continue
-            balance = account.get_balance(self.end)
+            balance = account.get_balance(date=self.end)
             if not balance:
                 continue
             if not txn:
@@ -238,32 +238,32 @@ class Account(MPTTModel):
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
-    def get_balance(self, date=None, lot=None):
+    def get_balance(self, date=None, children=False, lot=None):
         items = self.items
         if lot:
             items = items.filter(lot=lot)
-        return TransactionItem.get_total_balance(items, date)
+        balance = TransactionItem.get_total_balance(items, date)
 
-    def get_total_balance(self, **kwargs):
-        balance = self.get_balance(**kwargs)
+        if not children:
+            return balance
 
         if self.type == 'NE':
             balance += TransactionItem.get_total_balance(
                 TransactionItem.objects.filter(account__type__in=self.TYPES_PL),
-                **kwargs
+                date
             )
 
         return functools.reduce(
             operator.add,
             (
-                account.get_total_balance(**kwargs)
+                account.get_balance(date=date, children=True, lot=lot)
                 for account in self.children.all()
             ),
             balance
         )
 
-    def get_balance_display(self, **kwargs):
-        return display.currency(self.get_total_balance(**kwargs) * self.sign)
+    def get_balance_display(self):
+        return display.currency(self.get_balance(children=True) * self.sign)
     get_balance_display.short_description = 'balance'
 
     @property
@@ -374,11 +374,8 @@ class Lot(models.Model):
             ) + 1
         super().save(**kwargs)
 
-    def get_balance(self, **kwargs):
-        return self.account.get_balance(lot=self, **kwargs)
-
-    def get_total_balance(self, **kwargs):
-        return self.get_balance(**kwargs)
+    def get_balance(self, date=None):
+        return self.account.get_balance(date=date, lot=self)
 
     def get_balance_display(self):
         return display.currency(self.balance * self.account.sign)

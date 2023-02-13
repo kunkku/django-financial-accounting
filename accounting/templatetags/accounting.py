@@ -22,17 +22,17 @@ def reverse(iterable):
 def currency(amount):
     return display.currency(amount)
 
-def adjusted_balance(account, **kwargs):
-    return account.get_balance(**kwargs) * account.sign
+def adjusted_balance(account, date):
+    return account.get_balance(date=date) * account.sign
 
 @register.filter
 def opening_balance(account, fy):
     return 0 if account.is_pl_account else \
-        adjusted_balance(account, date=fy.start - timedelta(days=1))
+        adjusted_balance(account, fy.start - timedelta(days=1))
 
 @register.filter
 def closing_balance(account, fy):
-    return adjusted_balance(account, date=fy.end)
+    return adjusted_balance(account, fy.end)
 
 @register.filter
 def transactions(account, fy):
@@ -64,7 +64,7 @@ def account_chart(
     def append(account, total=False):
         nonlocal stack, show, max_show
         balances = [
-            account.get_total_balance(date=fy.end) *
+            account.get_balance(date=fy.end, children=True) *
             (1 if signed else account.sign) for fy in fyears
         ]
         if zero_rows or any(balances):
