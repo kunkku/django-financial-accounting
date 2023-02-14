@@ -160,6 +160,7 @@ class Account(MPTTModel):
     objects = managers.AccountManager()
     balance_accounts = managers.AccountManager('As', 'Eq', 'NE', 'Li')
     pl_accounts = managers.AccountManager(*TYPES_PL)
+    equity_accounts = managers.AccountManager('Eq', 'NE')
 
     def clean(self):
         try:
@@ -242,16 +243,27 @@ class Account(MPTTModel):
     def sign(self):
         return -1 if self.type in ('As', 'Ex') else 1
 
-    def get_balance(self, date=None, children=False, lot=None):
-        items = self.items
-        if lot:
-            items = items.filter(lot=lot)
-        balance = TransactionItem.get_total_balance(items, date)
+    def get_balance(
+        self,
+        date=None,
+        children=False,
+        lot=None,
+        transaction=None,
+    ):
+        if transaction == 'closing':
+            balance = 0
+        else:
+            items = self.items
+            if lot:
+                items = items.filter(lot=lot)
+            if transaction:
+                items = items.filter(transaction=transaction)
+            balance = TransactionItem.get_total_balance(items, date)
 
         if not children:
             return balance
 
-        if self.type == 'NE':
+        if self.type == 'NE' and transaction in (None, 'closing'):
             balance += TransactionItem.get_total_balance(
                 TransactionItem.objects.filter(account__type__in=self.TYPES_PL),
                 date
@@ -260,7 +272,9 @@ class Account(MPTTModel):
         return functools.reduce(
             operator.add,
             (
-                account.get_balance(date=date, children=True, lot=lot)
+                account.get_balance(
+                    date=date, children=True, lot=lot, transaction=transaction
+                )
                 for account in self.children.all()
             ),
             balance
@@ -378,7 +392,7 @@ class Lot(models.Model):
             ) + 1
         super().save(**kwargs)
 
-    def get_balance(self, date=None):
+    def get_balance(self, date=None, children=False):
         return self.account.get_balance(date=date, lot=self)
 
     def get_balance_display(self):

@@ -22,22 +22,29 @@ def reverse(iterable):
 def currency(amount):
     return display.currency(amount)
 
-def adjusted_balance(account, date):
-    return account.get_balance(date=date) * account.sign
+def adjusted_balance(account, date, children):
+    return account.get_balance(date=date, children=children) * account.sign
 
 @register.filter
-def opening_balance(account, fy):
+def opening_balance(account, fy, children=False):
     return 0 if account.is_pl_account else \
-        adjusted_balance(account, fy.start - timedelta(days=1))
+        adjusted_balance(account, fy.start - timedelta(days=1), children)
 
 @register.filter
-def closing_balance(account, fy):
-    return adjusted_balance(account, fy.end)
+def closing_balance(account, fy, children=False):
+    return adjusted_balance(account, fy.end, children)
 
 @register.filter
 def transactions(account, fy):
     return account.transactions.filter(fiscal_year=fy, closing=False)
 
+
+def format_table(header, body):
+    return format_html(
+        '<table><thead>{header}</thead><tbody>{body}</tbody></table>',
+        header=header,
+        body=body
+    )
 
 @register.simple_tag
 def account_chart(
@@ -206,15 +213,9 @@ def account_chart(
             span=format_html(' colspan="{}"', max_show) if post_totals else ''
         )
 
-    return format_html(
-        '<table>{header}<tbody>{body}</tbody></table>',
-        body=render_accounts(
-            stack[0]['children'],
-            -1 if top_level_totals else 0,
-            () if post_totals else (empty_cols,) * (max_show - 1)
-        ),
-        header=format_html(
-            '<thead><tr>{indent}{labels}</tr></thead>',
+    return format_table(
+        format_html(
+            '<tr>{indent}{labels}<tr>',
             indent=render_header(''),
             labels=mark_safe(
                 ''.join(
@@ -224,5 +225,76 @@ def account_chart(
                     ) for fy in fyears
                 )
             )
-        ) if multi_fy else ''
+        ) if multi_fy else '',
+        render_accounts(
+            stack[0]['children'],
+            -1 if top_level_totals else 0,
+            () if post_totals else (empty_cols,) * (max_show - 1)
+        ),
+    )
+
+@register.simple_tag
+def account_change_table(fy, accounts):
+    header = [''] + [acct.name for acct in accounts]
+    rows = []
+
+    def render_balance(balance):
+        return display.currency(balance) if balance else ''
+
+    def append_row(title, balances):
+        rows.append([title] + [render_balance(balance) for balance in balances])
+
+    def append_txn_row(txn, description):
+        balances = [
+            acct.get_balance(date=fy.end, children=True, transaction=txn)
+            for acct in accounts
+        ]
+        if any(balances):
+            append_row(description, balances)
+
+    append_row(
+        f'Opening balance on {fy.start}',
+        [opening_balance(acct, fy, children=True) for acct in accounts]
+    )
+
+    for txn in fy.transactions.filter(closing=False):
+        append_txn_row(txn, txn.description)
+
+    append_txn_row('closing', 'Net earnings')
+
+    append_row(
+        f'Closing balance on {fy.end}',
+        [closing_balance(acct, fy, children=True) for acct in accounts]
+    )
+
+    i = 1
+    while i < len(header):
+        for row in rows:
+            if row[i]:
+                break
+        else:
+            del header[i]
+            for row in rows:
+                del row[i]
+            continue
+        i += 1
+
+    def render_row(columns, tag):
+        return format_html(
+            '<tr>{}</tr>',
+            mark_safe(
+                ''.join(
+                    format_html(
+                        '<{tag}{cls}>{column}</{tag}>',
+                        cls=mark_safe(' class="right"') if i else '',
+                        column=column,
+                        tag=mark_safe(tag)
+                    ) for i, column in zip(count(), columns)
+                )
+            )
+        )
+
+    return format_table(
+        render_row(header, 'th'),
+        mark_safe(''.join(render_row(row, 'td') for row in rows))
     )

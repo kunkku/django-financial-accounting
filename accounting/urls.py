@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2022 Data King Ltd
+# Copyright (c) 2015-2023 Data King Ltd
 # See LICENSE file for license details
 
 from django.urls import path
@@ -22,6 +22,11 @@ urlpatterns = (
         'income-statement/<str:fy>',
         IncomeStatementView.as_view(),
         name='income_statement'
+    ),
+    path(
+        'equity-change-statement/<str:fy>',
+        EquityChangeStatementView.as_view(),
+        name='equity_change_statement'
     ),
     path(
         'balance-sheet-breakdown/<str:fy>',

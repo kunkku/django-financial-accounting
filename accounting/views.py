@@ -41,6 +41,11 @@ class AccountView(ReportView):
     def update_context(self, context, args):
         context['accounts'] = self.accounts.all()
 
+class EquityChangeStatementView(AccountView):
+    title = 'Statement of Changes in Equity'
+    template_name = 'accounting/equity_change_statement.html'
+    accounts = Account.equity_accounts.filter(public=True)
+
 class BalanceSheetBreakdownView(AccountView):
     title = 'Balance Sheet Breakdown {}'
     template_name = 'accounting/balance_sheet_breakdown.html'
@@ -72,7 +77,7 @@ class FinancialStatementView(AnnualReportView):
 
     def update_context(self, context, args):
         super().update_context(context, args)
-        for group in ('balance', 'pl'):
+        for group in ('balance', 'pl', 'equity'):
             attr = f'{group}_accounts'
             context[attr] = getattr(Account, attr).filter(public=True)
 
