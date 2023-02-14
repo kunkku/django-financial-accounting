@@ -65,6 +65,10 @@ class FiscalYear(DateRange):
         return str(self.end.year) + (chr(64 + i) if i else '')
     __str__.short_description = 'Fiscal year'
 
+    @property
+    def transactions(self):
+        return self.transaction_set.filter(state='C')
+
     def close(self):
         if self.closed:
             raise ValidationError(f'Fiscal year {self} already closed')
@@ -179,9 +183,9 @@ class Account(MPTTModel):
                     fyears = FiscalYear.objects.filter(closed=False)
                     if fyears.exists():
                         fy = fyears.order_by('start')[0]
-                        date = fy.transaction_set.filter(state='C').aggregate(
-                            models.Max('date')
-                        )['date__max']
+                        date = fy.transactions.aggregate(models.Max('date'))[
+                            'date__max'
+                        ]
                     else:
                         date = FiscalYear.objects.order_by('-end')[0].end + \
                             datetime.timedelta(days=1)
