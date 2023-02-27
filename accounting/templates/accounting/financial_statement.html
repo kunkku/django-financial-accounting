@@ -4,16 +4,26 @@
 {% extends "accounting/report.html" %}
 
 {% block content %}
+
+{% block balance_sheet %}
 <h2>Balance Sheet</h2>
 {% with accounts=balance_accounts %}
 {% include "accounting/includes/balance_sheet.html" %}
 {% endwith %}
+{% endblock %}
+
+{% block income_statement %}
 <h2>Income Statement</h2>
 {% with accounts=pl_accounts %}
 {% include "accounting/includes/income_statement.html" %}
 {% endwith %}
+{% endblock %}
+
+{% block equity_changes %}
 <h2>Statement of Changes in Equity</h2>
 {% with accounts=equity_accounts %}
 {% include "accounting/includes/equity_change_statement.html" %}
 {% endwith %}
+{% endblock %}
+
 {% endblock %}
