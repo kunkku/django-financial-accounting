@@ -3,7 +3,7 @@
 
 <html>
   <head>
-    <title>{{ title }}</title>
+    <title>{{ title }} {{ fy }}</title>
     <style>
       th, td { padding-right: 5mm; }
       th { text-align: left; }
@@ -14,7 +14,14 @@
     </style>
   </head>
   <body>
+    {% block heading %}
     <h1>{{ title }}</h1>
+    {% endblock %}
+
+    {% block date %}
+    <h2>{{ fy.end }}</h2>
+    {% endblock %}
+
     {% block content %}
     {% endblock %}
   </body>

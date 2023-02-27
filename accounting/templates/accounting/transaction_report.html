@@ -1,0 +1,9 @@
+{# Copyright (c) 2015-2023 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "accounting/report.html" %}
+{% load i18n %}
+
+{% block date %}
+<h2>{% blocktrans with start=fy.start end=fy.end %}From {{ start }} to {{ end }}{% endblocktrans %}</h2>
+{% endblock %}
