@@ -39,6 +39,7 @@ class DateRange(models.Model):
 
 class FiscalYear(DateRange):
     closed = models.BooleanField(default=False, editable=False)
+    properties = models.JSONField(blank=True, null=True)
 
     @classmethod
     def generate(cls, date):
