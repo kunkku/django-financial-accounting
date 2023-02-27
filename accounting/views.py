@@ -2,6 +2,7 @@
 # See LICENSE file for license details
 
 from django.conf import settings
+from django.db.models import Max, Min
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -83,6 +84,12 @@ class FinancialStatementView(AnnualReportView):
         for group in ('balance', 'pl', 'equity'):
             attr = f'{group}_accounts'
             context[attr] = getattr(Account, attr).filter(public=True)
+        context['journals'] = Journal.objects.filter(
+            transaction__fiscal_year=context['fy']
+        ).values('code', 'description').annotate(
+            min=Min('transaction__number'), max=Max('transaction__number')
+        )
+
 
 class BalanceSheetView(AnnualReportView):
     title = 'Balance Sheet'

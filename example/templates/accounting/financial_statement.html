@@ -1,0 +1,24 @@
+{# Copyright (c) 2015-2023 Data King Ltd #}
+{# See LICENSE file for license details #}
+
+{% extends "accounting/financial_statement.html" %}
+{% load accounting %}
+
+{% block content %}
+{{ block.super }}
+
+<h2>List of Journals</h2>
+
+<table>
+  <thead><tr><th>Code</th><th>Numbers</th><th>Description</th></tr></thead>
+  <tbody>
+    {% for journal in journals %}
+    <tr>
+      <td>{{ journal.code }}</td>
+      <td>{{ journal.min }}&ndash;{{ journal.max }}</td>
+      <td>{{ journal.description }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
