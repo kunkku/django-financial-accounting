@@ -3,7 +3,7 @@
 
 <html>
   <head>
-    <title>{{ title }} {{ fy }}</title>
+    <title>{{ company_name|default:"" }} {{ title }} {{ fy }}</title>
     <style>
       th, td { padding-right: 5mm; }
       th { text-align: left; }
@@ -14,6 +14,12 @@
     </style>
   </head>
   <body>
+    {% block company %}
+    {% if company_name %}
+    <h1>{{ company_name }}</h1>
+    {% endif %}
+    {% endblock %}
+
     {% block heading %}
     <h1>{{ title }}</h1>
     {% endblock %}

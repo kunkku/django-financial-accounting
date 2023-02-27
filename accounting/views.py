@@ -1,6 +1,7 @@
 # Copyright (c) 2015-2022 Data King Ltd
 # See LICENSE file for license details
 
+from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -29,8 +30,10 @@ class ReportView(TemplateView):
         except IndexError:
             raise Http404
 
-        res['fy'] = fy
+        res['company_name'] = getattr(settings, 'ACCOUNTING_COMPANY_NAME', None)
         res['title'] = self.title
+        res['fy'] = fy
+
         self.update_context(res, kwargs)
         return res
 
