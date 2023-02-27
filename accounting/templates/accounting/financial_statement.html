@@ -13,7 +13,7 @@
 {% include "accounting/includes/income_statement.html" %}
 {% endwith %}
 <h2>Statement of Changes in Equity</h2>
-{% with fy=fy.0 accounts=equity_accounts %}
+{% with accounts=equity_accounts %}
 {% include "accounting/includes/equity_change_statement.html" %}
 {% endwith %}
 {% endblock %}

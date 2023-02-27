@@ -67,7 +67,7 @@ class GeneralLedgerView(AccountView):
 class AnnualReportView(AccountView):
     def update_context(self, context, args):
         super().update_context(context, args)
-        context['fy'] = FiscalYear.objects.filter(
+        context['fiscal_years'] = FiscalYear.objects.filter(
             end__lte=context['fy'].end
         ).order_by('-end')
 
