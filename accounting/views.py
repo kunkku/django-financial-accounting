@@ -110,6 +110,7 @@ class JournalView(ReportView):
         txn_filter = {'fiscal_year': context['fy']}
 
         if 'code' in args:
+            context['code'] = args['code']
             journal = get_object_or_404(Journal, code=args['code'])
             context['title'] = journal.description or journal.code
             txn_filter['journal'] = journal
