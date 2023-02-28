@@ -5,7 +5,9 @@
   <head>
     <title>{{ company_name|default:"" }} {{ title }} {{ fy }}</title>
     <style>
+      h1, h2, h3 { break-after: avoid; }
       .newpage { break-before: page; }
+
       th, td { padding-right: 5mm; }
       th { text-align: left; }
       .indent { min-width: 5mm; }
