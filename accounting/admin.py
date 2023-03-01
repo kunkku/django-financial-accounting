@@ -53,6 +53,9 @@ class FiscalYearAdmin(ContextAdmin):
         ),
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        return ('start', 'end', 'properties') if obj and obj.closed else ()
+
     def get_context(self, fy):
         return {
             'fy': str(fy),
