@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2023 Data King Ltd
+# Copyright (c) 2015-2024 Data King Ltd
 # See LICENSE file for license details
 
 from django.conf import settings
@@ -22,8 +22,11 @@ class ReportView(TemplateView):
             y = int(fy)
             i = 0
         except ValueError:
-            y = int(fy[:-1])
-            i = ord(fy[-1]) - 64
+            try:
+                y = int(fy[:-1])
+                i = ord(fy[-1]) - 64
+            except ValueError:
+                raise Http404
 
         try:
             fy = FiscalYear.objects.filter(
