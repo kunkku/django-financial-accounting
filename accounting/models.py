@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2023 Data King Ltd
+# Copyright (c) 2015-2024 Data King Ltd
 # See LICENSE file for license details
 
 from django.conf import settings
@@ -212,7 +212,7 @@ class Account(MPTTModel):
         if self.code:
             order = self.code
         else:
-            children = self.children.all()
+            children = self.children.all() if self.pk else ()
             order = functools.reduce(
                 min, (child.order for child in children)
             ) if children else ''
