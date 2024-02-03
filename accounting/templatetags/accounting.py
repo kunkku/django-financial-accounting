@@ -1,4 +1,4 @@
-# Copyright (c) 2015-2023 Data King Ltd
+# Copyright (c) 2015-2024 Data King Ltd
 # See LICENSE file for license details
 
 from django import template
@@ -39,6 +39,17 @@ def closing_balance(account, fy, children=False):
 @register.filter
 def transactions(account, fy):
     return account.transactions.filter(fiscal_year=fy, closing=False)
+
+@register.filter
+def select_accounts(accounts, codes):
+    return [accounts.get(code=int(c)) for c in codes.split(',')]
+
+@register.filter
+def total_balance(accounts, fy):
+    total = 0
+    for account in accounts if isinstance(accounts, Iterable) else (accounts,):
+        total += account.get_balance(date=fy.end, children=True)
+    return total
 
 
 def format_table(header, body):
