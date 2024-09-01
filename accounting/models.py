@@ -498,14 +498,6 @@ class Transaction(models.Model):
                 f'Fiscal year {self.fiscal_year} already closed'
             )
 
-        for item in self.items.all():
-            if item.account.lot_tracking and not item.lot:
-                item.lot = Lot.objects.create(
-                    account=item.account, fiscal_year=self.fiscal_year
-                )
-            item.clean()
-            item.save()
-
         if self.number:
             if Transaction.objects.filter(
                     fiscal_year=self.fiscal_year,
@@ -515,6 +507,14 @@ class Transaction(models.Model):
                 raise ValidationError('Duplicate transaction number')
         else:
             self.number = self.journal.issue_number(self)
+
+        for item in self.items.all():
+            if item.account.lot_tracking and not item.lot:
+                item.lot = Lot.objects.create(
+                    account=item.account, fiscal_year=self.fiscal_year
+                )
+            item.clean()
+            item.save()
 
         self.state = 'C'
         self.save()
