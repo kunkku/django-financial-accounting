@@ -1,7 +1,8 @@
-# Copyright (c) 2015-2022 Data King Ltd
+# Copyright (c) 2015-2026 Data King Ltd
 # See LICENSE file for license details
 
 from django.contrib import admin, messages
+from django.http import Http404
 from mptt.admin import MPTTModelAdmin
 
 from .models import *
@@ -11,7 +12,11 @@ from .forms import *
 class ContextMixin(object):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
-        obj = self.model.objects.get(pk=object_id)
+        try:
+            obj = self.model.objects.get(pk=object_id)
+        except self.model.DoesNotExist:
+            raise Http404
+
         extra_context = extra_context or {}
         extra_context.update(self.get_context(obj))
 
